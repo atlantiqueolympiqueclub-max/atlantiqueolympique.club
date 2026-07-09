@@ -4,8 +4,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import EventTimeline from '../components/EventTimeline.astro';
 import { partitionEvents } from '../lib/events';
+import pages from '../data/pages.json';
 
-const { upcoming, past } = partitionEvents(await getCollection('events'));
+const page = pages.events;
+const { upcoming, past } = partitionEvents((await getCollection('events')).filter((event) => !event.data.draft));
 
 // Group a sorted list into consecutive month buckets ("juillet 2025").
 const monthFmt = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
@@ -23,7 +25,7 @@ function groupByMonth(events: CollectionEntry<'events'>[]) {
 const phases = [];
 if (upcoming.length) {
   phases.push({
-    heading: 'Prochains rendez-vous',
+    heading: page.upcomingHeading,
     count: upcoming.length,
     groups: groupByMonth(upcoming),
     highlightNext: true,
@@ -31,18 +33,15 @@ if (upcoming.length) {
 }
 if (past.length) {
   phases.push({
-    heading: 'Éditions passées',
+    heading: page.pastHeading,
     groups: groupByMonth(past),
     past: true,
   });
 }
 ---
 
-<BaseLayout
-  title="Calendrier"
-  description="Le calendrier de la saison de l'Atlantique Olympique Club : compétitions, traversées et galas à venir."
->
-  <PageHero eyebrow="Agenda de la saison" title="Calendrier" />
+<BaseLayout title={page.title} description={page.description}>
+  <PageHero eyebrow={page.heroEyebrow} title={page.heroTitle} />
 
   <section class="container-aoc py-14 sm:py-20">
     {phases.length ? (
@@ -51,7 +50,7 @@ if (past.length) {
       </div>
     ) : (
       <p class="mx-auto max-w-xl rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500">
-        Aucun événement au calendrier pour le moment. Revenez bientôt !
+        {page.emptyMessage}
       </p>
     )}
   </section>

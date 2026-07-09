@@ -1,0 +1,3 @@
+# Cloudflare Pages: keep the editor URL slash-terminated so Sveltia resolves
+# /admin/config.yml correctly when editors type /admin.
+/admin /admin/ 301

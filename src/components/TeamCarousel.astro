@@ -29,7 +29,7 @@ const { members } = Astro.props;
         <span class="ring-water inline-flex">
           <SmartImage
             src={m.data.photo}
-            alt={m.data.name}
+            alt={m.data.photoAlt ?? m.data.name}
             rounded="rounded-full"
             class="h-28 w-28 ring-[3px] ring-white"
           />

@@ -1,5 +1,5 @@
-import { defineCollection, z } from 'astro:content';
-import { glob } from 'astro/loaders';
+import { defineCollection, z } from "astro:content";
+import { glob } from "astro/loaders";
 
 /**
  * Content collections — see PLAN.md §3.
@@ -13,76 +13,96 @@ import { glob } from 'astro/loaders';
 
 // "L'ÉQUIPE AOC" — coaches / staff carousel
 const team = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/team' }),
+  loader: glob({ pattern: "**/*.md", base: "./src/content/team" }),
   schema: z.object({
     name: z.string(),
     role: z.string(),
     photo: z.string(),
+    photoAlt: z.string().optional(),
     bio: z.string().optional(),
+    hidden: z.boolean().default(false),
     order: z.number().default(0),
   }),
 });
 
 // "LE CLUB (INSIDE AOC)" — athletes + palmarès
 const athletes = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/athletes' }),
+  loader: glob({ pattern: "**/*.md", base: "./src/content/athletes" }),
   schema: z.object({
     name: z.string(),
     photo: z.string(),
+    photoAlt: z.string().optional(),
     discipline: z.string().optional(),
     palmares: z.array(z.string()).default([]),
+    hidden: z.boolean().default(false),
     order: z.number().default(0),
   }),
 });
 
 // "PROCHAINS ÉVÉNEMENTS"
 const events = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/events' }),
+  loader: glob({ pattern: "**/*.md", base: "./src/content/events" }),
   schema: z.object({
     title: z.string(),
     image: z.string(),
+    imageAlt: z.string().optional(),
     date: z.coerce.date(),
     // Freeform so it holds a single time or a range, e.g. "09h00" or "14h00 – 19h00".
     time: z.string().optional(),
     location: z.string().optional(),
     sourceUrl: z.string().url().optional(),
+    registrationUrl: z.string().url().optional(),
+    resultsUrl: z.string().url().optional(),
+    ctaLabel: z.string().optional(),
     description: z.string().optional(),
+    cancelled: z.boolean().default(false),
+    draft: z.boolean().default(false),
     // Past vs. upcoming is derived from `date` at build time — see src/lib/events.ts.
   }),
 });
 
 // "BLOG" — articles
 const blog = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/blog' }),
+  loader: glob({ pattern: "**/*.md", base: "./src/content/blog" }),
   schema: z.object({
     title: z.string(),
     date: z.coerce.date(),
     cover: z.string(),
+    coverAlt: z.string().optional(),
+    coverCaption: z.string().optional(),
+    coverCredit: z.string().optional(),
     excerpt: z.string(),
     featured: z.boolean().default(false),
+    draft: z.boolean().default(false),
     tags: z.array(z.string()).default([]),
   }),
 });
 
 // "NOTRE GALERIE"
 const gallery = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/gallery' }),
+  loader: glob({ pattern: "**/*.md", base: "./src/content/gallery" }),
   schema: z.object({
     image: z.string(),
+    imageAlt: z.string().optional(),
     title: z.string().optional(),
+    caption: z.string().optional(),
+    credit: z.string().optional(),
     eventName: z.string().optional(),
     date: z.coerce.date().optional(),
+    hidden: z.boolean().default(false),
     order: z.number().default(0),
   }),
 });
 
 // Federation / partner logos (AOC, FSNS, …)
 const partners = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './src/content/partners' }),
+  loader: glob({ pattern: "**/*.md", base: "./src/content/partners" }),
   schema: z.object({
     name: z.string(),
     logo: z.string(),
+    logoAlt: z.string().optional(),
     url: z.string().url().optional(),
+    hidden: z.boolean().default(false),
     order: z.number().default(0),
   }),
 });

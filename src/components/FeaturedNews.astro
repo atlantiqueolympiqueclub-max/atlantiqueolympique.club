@@ -23,7 +23,7 @@ const fmt = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'long', ye
       <div class="relative overflow-clip" transition:name={`cover-${lead.id}`}>
         <SmartImage
           src={lead.data.cover}
-          alt={lead.data.title}
+          alt={lead.data.coverAlt ?? lead.data.title}
           class="aspect-[16/11] h-full w-full transition-transform duration-700 group-hover:scale-[1.05]"
           rounded="rounded-none"
           loading="eager"
@@ -57,7 +57,7 @@ const fmt = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'long', ye
           <span class="block overflow-clip rounded-xl" transition:name={`cover-${p.id}`}>
             <SmartImage
               src={p.data.cover}
-              alt={p.data.title}
+              alt={p.data.coverAlt ?? p.data.title}
               class="aspect-square w-full transition-transform duration-700 group-hover:scale-[1.07]"
               rounded="rounded-none"
             />

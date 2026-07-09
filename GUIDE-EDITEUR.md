@@ -14,7 +14,7 @@ formulaires. Aucune connaissance technique n'est nécessaire.
 
 1. Ouvrez votre navigateur et allez à l'adresse du site suivie de **`/admin`**
    (par exemple `https://aoc-natation.pages.dev/admin`).
-   *(L'adresse exacte vous sera communiquée par la personne qui a installé le site.)*
+   _(L'adresse exacte vous sera communiquée par la personne qui a installé le site.)_
 2. Cliquez sur **« Se connecter avec GitHub »**.
 3. La première fois, GitHub vous demande d'autoriser l'accès : cliquez sur
    **Authorize**. C'est à faire une seule fois.
@@ -28,15 +28,15 @@ formulaires. Aucune connaissance technique n'est nécessaire.
 
 À gauche, une **liste de rubriques** correspond aux différentes parties du site :
 
-| Rubrique | Ce que ça modifie |
-|---|---|
-| **Athlètes** | Les nageurs présentés dans « Le club » |
-| **Staff / Encadrement** | Les entraîneurs et encadrants |
-| **Événements** | Le calendrier (« Prochains événements ») |
-| **Blog** | Les articles / actualités |
-| **Galerie** | Les photos de la galerie |
-| **Partenaires** | Les logos des fédérations et partenaires |
-| **Réglages du site** | Textes d'accueil, coordonnées, menu, chiffres clés |
+| Rubrique                | Ce que ça modifie                                                   |
+| ----------------------- | ------------------------------------------------------------------- |
+| **Athlètes**            | Les nageurs présentés dans « Le club »                              |
+| **Staff / Encadrement** | Les entraîneurs et encadrants                                       |
+| **Événements**          | Le calendrier (« Prochains événements »)                            |
+| **Blog**                | Les articles / actualités                                           |
+| **Galerie**             | Les photos de la galerie                                            |
+| **Partenaires**         | Les logos des fédérations et partenaires                            |
+| **Réglages du site**    | Textes d'accueil, titres de pages, coordonnées, menu, chiffres clés |
 
 Cliquez sur une rubrique pour voir la liste des éléments existants.
 
@@ -62,9 +62,20 @@ Exemple avec un **athlète** (le principe est identique partout) :
 4. Cliquez sur **Enregistrer / Publier**.
 
 ### Les champs « Ordre d'affichage »
+
 Certaines rubriques ont un champ **Ordre d'affichage** (un nombre). Plus le
 nombre est **petit**, plus l'élément apparaît **tôt** sur le site. Par exemple,
 un athlète avec l'ordre `1` s'affiche avant un athlète avec l'ordre `5`.
+
+### Brouillons et éléments masqués
+
+Certaines rubriques ont un champ **Brouillon** ou **Masquer du site**.
+
+- **Brouillon** : utile pour préparer un article ou un événement sans le publier.
+- **Masquer du site** : utile pour garder une fiche existante sans l'afficher
+  publiquement.
+
+Décochez le champ quand l'élément est prêt à être visible sur le site.
 
 ---
 
@@ -78,12 +89,22 @@ Dans un champ **Photo / Image / Logo** :
 3. La photo est ajoutée automatiquement au site.
 
 **Conseils pour les photos :**
+
 - Formats acceptés : **JPG** ou **PNG** (photos), **SVG** ou **PNG** (logos).
 - Évitez les fichiers trop lourds : idéalement **moins de 1 Mo** par photo.
   Une image trop grande ralentit le site. Vous pouvez réduire une photo avec un
   outil gratuit comme [squoosh.app](https://squoosh.app) avant de la téléverser.
 - Préférez des photos au format **paysage** (plus large que haut) pour les
   couvertures et bannières.
+
+### Texte alternatif, légende et crédit
+
+Quand un champ **Texte alternatif** est proposé, décrivez brièvement ce que l'on
+voit sur l'image. Ce texte aide les personnes qui utilisent un lecteur d'écran.
+Exemple : `Nageuse de l'AOC au départ d'une course`.
+
+Les champs **Légende** et **Crédit photo** sont facultatifs, mais utiles pour
+préciser le contexte ou mentionner le photographe.
 
 ---
 
@@ -103,10 +124,13 @@ Ouvrez l'élément, puis cherchez le bouton **Supprimer** (souvent via le menu
 Tout cela se trouve dans **Réglages du site** :
 
 - **Page d'accueil — textes** : le grand titre, le sous-titre, et le texte
-  « Qui sommes-nous ? ».
+  « Qui sommes-nous ? », mais aussi les titres de sections, le bouton principal
+  et le ruban des disciplines.
 - **Contact** : téléphone(s) et e-mail.
-  *(L'emplacement du club et la carte sont volontairement « fixes » — normalement
-  vous n'y touchez pas. Ils sont rangés dans des sections repliées.)*
+  _(L'emplacement du club et la carte sont volontairement « fixes » — normalement
+  vous n'y touchez pas. Ils sont rangés dans des sections repliées.)_
+- **Pages secondaires — titres & référencement** : les titres et descriptions
+  des pages Blog, Calendrier et Galerie.
 - **Général & navigation** : nom du club, devise, menu du haut, réseaux sociaux,
   et les **chiffres clés** (les compteurs animés : licenciés, podiums, etc.).
 

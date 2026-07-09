@@ -3,15 +3,16 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
 import GalleryGrid from '../components/GalleryGrid.astro';
+import pages from '../data/pages.json';
 
-const items = (await getCollection('gallery')).sort((a, b) => a.data.order - b.data.order);
+const page = pages.gallery;
+const items = (await getCollection('gallery'))
+  .filter((item) => !item.data.hidden)
+  .sort((a, b) => a.data.order - b.data.order);
 ---
 
-<BaseLayout
-  title="Galerie"
-  description="Photos des compétitions, entraînements et moments de vie de l'Atlantique Olympique Club."
->
-  <PageHero eyebrow="Vie du club" title="Notre galerie" />
+<BaseLayout title={page.title} description={page.description}>
+  <PageHero eyebrow={page.heroEyebrow} title={page.heroTitle} />
 
   <section id="galerie" class="container-aoc py-14 sm:py-20">
     <GalleryGrid items={items} closeHref="#galerie" />

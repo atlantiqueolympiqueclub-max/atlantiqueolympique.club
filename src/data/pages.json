@@ -1,0 +1,23 @@
+{
+  "blog": {
+    "title": "Blog",
+    "description": "Actualités, conseils et résultats de l'Atlantique Olympique Club.",
+    "heroEyebrow": "Actualités",
+    "heroTitle": "Blog"
+  },
+  "events": {
+    "title": "Calendrier",
+    "description": "Le calendrier de la saison de l'Atlantique Olympique Club : compétitions, traversées et galas à venir.",
+    "heroEyebrow": "Agenda de la saison",
+    "heroTitle": "Calendrier",
+    "upcomingHeading": "Prochains rendez-vous",
+    "pastHeading": "Éditions passées",
+    "emptyMessage": "Aucun événement au calendrier pour le moment. Revenez bientôt !"
+  },
+  "gallery": {
+    "title": "Galerie",
+    "description": "Photos des compétitions, entraînements et moments de vie de l'Atlantique Olympique Club.",
+    "heroEyebrow": "Vie du club",
+    "heroTitle": "Notre galerie"
+  }
+}

@@ -5,7 +5,7 @@ import SmartImage from '../../components/SmartImage.astro';
 import Icon from '../../components/Icon.astro';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
+  const posts = (await getCollection('blog')).filter((post) => !post.data.draft);
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 
@@ -27,7 +27,7 @@ const minutes = Math.max(1, Math.round(words / 200));
     >
       <SmartImage
         src={post.data.cover}
-        alt={post.data.title}
+        alt={post.data.coverAlt ?? post.data.title}
         class="absolute inset-0 -z-10 h-full w-full"
         rounded="rounded-none"
         loading="eager"
@@ -56,6 +56,13 @@ const minutes = Math.max(1, Math.round(words / 200));
 
     <!-- body -->
     <div class="container-aoc py-12 sm:py-16">
+      {(post.data.coverCaption || post.data.coverCredit) && (
+        <p class="mx-auto -mt-6 mb-8 max-w-3xl text-xs text-slate-400">
+          {post.data.coverCaption}
+          {post.data.coverCaption && post.data.coverCredit ? ' — ' : ''}
+          {post.data.coverCredit}
+        </p>
+      )}
       <div class="prose-aoc mx-auto max-w-3xl">
         <Content />
       </div>

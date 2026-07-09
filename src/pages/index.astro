@@ -23,14 +23,16 @@ const byOrder = (a: { data: { order: number } }, b: { data: { order: number } })
   a.data.order - b.data.order;
 const byDateDesc = (a: { data: { date: Date } }, b: { data: { date: Date } }) =>
   b.data.date.valueOf() - a.data.date.valueOf();
+const isVisible = (entry: { data: { hidden?: boolean; draft?: boolean } }) =>
+  !entry.data.hidden && !entry.data.draft;
 
-const team = (await getCollection('team')).sort(byOrder);
-const athletes = (await getCollection('athletes')).sort(byOrder);
-const partners = (await getCollection('partners')).sort(byOrder);
+const team = (await getCollection('team')).filter(isVisible).sort(byOrder);
+const athletes = (await getCollection('athletes')).filter(isVisible).sort(byOrder);
+const partners = (await getCollection('partners')).filter(isVisible).sort(byOrder);
 
-const upcoming = partitionEvents(await getCollection('events')).upcoming.slice(0, 3);
+const upcoming = partitionEvents((await getCollection('events')).filter(isVisible)).upcoming.slice(0, 3);
 
-const posts = (await getCollection('blog')).sort(byDateDesc);
+const posts = (await getCollection('blog')).filter(isVisible).sort(byDateDesc);
 const featured = posts.filter((p) => p.data.featured).slice(0, 3);
 const news = featured.length > 0 ? featured : posts.slice(0, 3);
 
@@ -44,11 +46,18 @@ const socialBrand: Record<string, string> = {
 };
 
 // Decorative ghost-text ribbon under the hero
-const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau libre', 'Sauvetage'];
+const disciplines = home.disciplines ?? ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau libre', 'Sauvetage'];
 ---
 
 <BaseLayout footerWave="bg-slate-50">
-  <Hero title={home.heroTitle} accent={home.heroAccent} subtitle={home.heroSubtitle} />
+  <Hero
+    title={home.heroTitle}
+    accent={home.heroAccent}
+    subtitle={home.heroSubtitle}
+    badge={home.heroBadge}
+    ctaLabel={home.heroCtaLabel}
+    ctaHref={home.heroCtaHref}
+  />
 
   <!-- ============ DISCIPLINES — drifting ghost type ============ -->
   <div class="overflow-clip bg-white pb-1 pt-7 sm:pt-9" aria-hidden="true">
@@ -71,7 +80,11 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
   <!-- ================= À PROPOS ================= -->
   <section id="a-propos" class="scroll-mt-24 overflow-x-clip py-14 sm:py-20">
     <div class="container-aoc">
-      <SectionHeader eyebrow="Qui sommes-nous" title="Un club, une exigence, une passion" />
+      <SectionHeader
+        eyebrow={home.aboutEyebrow ?? 'Qui sommes-nous'}
+        title={home.aboutTitle ?? 'Un club, une exigence, une passion'}
+        description={home.aboutDescription}
+      />
     </div>
 
     <div class="container-aoc mt-10">
@@ -83,15 +96,17 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
         <div class="relative mx-auto mt-4 w-full max-w-[16rem] md:mt-2" data-reveal="right" style="--dr:1">
           <div class="absolute -inset-2.5 -rotate-3 rounded-3xl bg-gradient-to-tr from-aoc-200/80 to-aoc-400/30" aria-hidden="true"></div>
           <SmartImage
-            src="/images/about-team.svg"
-            alt="L'équipe de l'Atlantique Olympique Club"
+            src={home.aboutImage ?? '/images/about-team.svg'}
+            alt={home.aboutImageAlt ?? "L'équipe de l'Atlantique Olympique Club"}
             rounded="rounded-2xl"
             class="relative aspect-square w-full border-4 border-white shadow-xl shadow-aoc-900/15"
           />
-          <span class="animate-float absolute -bottom-4 -left-4 inline-flex items-center gap-1.5 rounded-full border border-slate-100 bg-white px-3.5 py-1.5 text-xs font-bold text-navy shadow-lg">
-            <Icon name="map-pin" class="h-3.5 w-3.5 text-aoc-500" />
-            Dakar · Sénégal
-          </span>
+          {(home.aboutBadge ?? 'Dakar · Sénégal') && (
+            <span class="animate-float absolute -bottom-4 -left-4 inline-flex items-center gap-1.5 rounded-full border border-slate-100 bg-white px-3.5 py-1.5 text-xs font-bold text-navy shadow-lg">
+              <Icon name="map-pin" class="h-3.5 w-3.5 text-aoc-500" />
+              {home.aboutBadge ?? 'Dakar · Sénégal'}
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -100,7 +115,7 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
     {partners.length > 0 && (
       <div class="container-aoc mt-14" data-reveal>
         <p class="text-center text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
-          Nos partenaires
+          {home.partnersLabel ?? 'Nos partenaires'}
         </p>
         <div class="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6">
           {partners.map((p) =>
@@ -112,12 +127,12 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
                 title={p.data.name}
                 class="opacity-70 grayscale transition-all duration-300 hover:-translate-y-1 hover:opacity-100 hover:grayscale-0"
               >
-                <img src={p.data.logo} alt={p.data.name} class="h-12 w-auto" loading="lazy" />
+                <img src={p.data.logo} alt={p.data.logoAlt ?? p.data.name} class="h-12 w-auto" loading="lazy" />
               </a>
             ) : (
               <img
                 src={p.data.logo}
-                alt={p.data.name}
+                alt={p.data.logoAlt ?? p.data.name}
                 class="h-12 w-auto opacity-70 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0"
                 loading="lazy"
               />
@@ -137,15 +152,15 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
   <section id="le-club" class="scroll-mt-24 bg-slate-50 py-14 sm:py-20">
     <div class="container-aoc">
       <SectionHeader
-        eyebrow="Le club"
-        title="L'AOC en personnes"
-        description="Encadrement diplômé, athlètes engagés : découvrez celles et ceux qui font vivre le club."
+        eyebrow={home.clubEyebrow ?? 'Le club'}
+        title={home.clubTitle ?? "L'AOC en personnes"}
+        description={home.clubDescription ?? "Encadrement diplômé, athlètes engagés : découvrez celles et ceux qui font vivre le club."}
       />
     </div>
 
     <!-- Encadrement -->
     <div class="container-aoc mt-10">
-      <h3 class="font-display text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Encadrement</h3>
+      <h3 class="font-display text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{home.teamHeading ?? 'Encadrement'}</h3>
       <div class="mt-6">
         <TeamCarousel members={team} />
       </div>
@@ -153,7 +168,7 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
 
     <!-- Athlètes -->
     <div class="container-aoc mt-14">
-      <h3 class="font-display text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Athlètes</h3>
+      <h3 class="font-display text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{home.athletesHeading ?? 'Athlètes'}</h3>
       <div class="mt-7">
         <AthleteGrid athletes={athletes} showPalmares={false} />
       </div>
@@ -166,9 +181,9 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
   <section id="actualites" class="scroll-mt-24 py-14 sm:py-20">
     <div class="container-aoc">
       <SectionHeader
-        eyebrow="Actualités"
-        title="Dernières nouvelles"
-        description="Résultats, conseils et coulisses de la vie du club."
+        eyebrow={home.newsEyebrow ?? 'Actualités'}
+        title={home.newsTitle ?? 'Dernières nouvelles'}
+        description={home.newsDescription ?? 'Résultats, conseils et coulisses de la vie du club.'}
       />
 
       {news.length > 0 && (
@@ -179,7 +194,7 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
 
       <div class="mt-9" data-reveal="fade">
         <a href="/blog" class="link-arrow">
-          Voir plus d'articles <Icon name="arrow-right" class="h-4 w-4" />
+          {home.newsMoreLabel ?? "Voir plus d'articles"} <Icon name="arrow-right" class="h-4 w-4" />
         </a>
       </div>
     </div>
@@ -198,13 +213,13 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
       <div class="container-aoc grid gap-x-12 gap-y-9 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-center">
         <div data-reveal>
           <p class="font-display text-xs font-bold uppercase tracking-[0.16em] text-aoc-300">
-            Réseaux sociaux
+            {home.socialEyebrow ?? 'Réseaux sociaux'}
           </p>
           <h2 class="mt-2 max-w-md font-display text-[clamp(1.5rem,1.1rem+1.9vw,2.3rem)] font-extrabold tracking-tight">
-            Suivez l'AOC au quotidien
+            {home.socialTitle ?? "Suivez l'AOC au quotidien"}
           </h2>
           <p class="mt-4 max-w-md text-aoc-50/85">
-            Entraînements, compétitions, coulisses — la vie du club en images et en vidéos.
+            {home.socialDescription ?? 'Entraînements, compétitions, coulisses — la vie du club en images et en vidéos.'}
           </p>
         </div>
 
@@ -247,9 +262,9 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
   <section id="contact" class="scroll-mt-24 bg-slate-50 py-14 sm:py-20">
     <div class="container-aoc">
       <SectionHeader
-        eyebrow="Contact"
-        title="Venez nous rencontrer"
-        description="Prochains rendez-vous sportifs et coordonnées du club."
+        eyebrow={home.contactEyebrow ?? 'Contact'}
+        title={home.contactTitle ?? 'Venez nous rencontrer'}
+        description={home.contactDescription ?? 'Prochains rendez-vous sportifs et coordonnées du club.'}
       />
     </div>
 
@@ -257,11 +272,11 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
       <div>
         {upcoming.length > 0 && (
           <>
-            <h3 class="mb-5 font-display text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Prochains événements</h3>
+            <h3 class="mb-5 font-display text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{home.upcomingHeading ?? 'Prochains événements'}</h3>
             <EventList events={upcoming} />
             <div class="mt-6" data-reveal="fade">
               <a href="/evenements" class="link-arrow">
-                Tous les événements <Icon name="arrow-right" class="h-4 w-4" />
+                {home.eventsMoreLabel ?? 'Tous les événements'} <Icon name="arrow-right" class="h-4 w-4" />
               </a>
             </div>
           </>
@@ -269,7 +284,7 @@ const disciplines = ['Nage libre', 'Papillon', 'Dos', 'Brasse', '4 nages', 'Eau 
       </div>
 
       <div>
-        <h3 class="mb-5 font-display text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Coordonnées</h3>
+        <h3 class="mb-5 font-display text-xs font-bold uppercase tracking-[0.14em] text-slate-400">{home.contactHeading ?? 'Coordonnées'}</h3>
         <ContactBar layout="stack" />
         <div class="mt-6">
           <MapEmbed />

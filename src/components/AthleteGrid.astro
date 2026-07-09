@@ -20,7 +20,7 @@ const { athletes, showPalmares = true } = Astro.props;
       <span class="ring-water inline-flex transition-transform duration-300 group-hover:scale-105">
         <SmartImage
           src={a.data.photo}
-          alt={a.data.name}
+          alt={a.data.photoAlt ?? a.data.name}
           rounded="rounded-full"
           class="h-24 w-24 ring-[3px] ring-white sm:h-28 sm:w-28"
         />

@@ -15,7 +15,7 @@ backend:
   name: github
   repo: atlantiqueolympiqueclub-max/atlantiqueolympique.club
   branch: main
-  base_url: https://sveltia-cms-auth.atlantiqueolympiqueclub.workers.dev   # URL du worker d'authentification (SETUP.md §5)
+  base_url: https://sveltia-cms-auth.atlantiqueolympiqueclub.workers.dev # URL du worker d'authentification (SETUP.md §5)
 
 # Permet de tester l'éditeur en local sans authentification, via le proxy
 # « npx @sveltia/cms-proxy-server » (facultatif). Sans effet en production :
@@ -45,15 +45,48 @@ collections:
     sortable_fields: [order, name]
     fields:
       - { name: name, label: "Nom", widget: string }
-      - { name: photo, label: "Photo", widget: image, hint: "Portrait de l'athlète. Formats conseillés : JPG ou PNG." }
-      - { name: discipline, label: "Discipline", widget: string, required: false, hint: "Ex. : 100 m nage libre, 4 nages…" }
+      - {
+          name: photo,
+          label: "Photo",
+          widget: image,
+          hint: "Portrait de l'athlète. Formats conseillés : JPG ou PNG.",
+        }
+      - {
+          name: photoAlt,
+          label: "Texte alternatif de la photo",
+          widget: string,
+          required: false,
+          hint: "Description courte pour l'accessibilité. Si vide, le nom est utilisé.",
+        }
+      - {
+          name: discipline,
+          label: "Discipline",
+          widget: string,
+          required: false,
+          hint: "Ex. : 100 m nage libre, 4 nages…",
+        }
       - name: palmares
         label: "Palmarès"
         widget: list
         required: false
         summary: "{{fields.entry}}"
         field: { name: entry, label: "Titre / résultat", widget: string }
-      - { name: order, label: "Ordre d'affichage", widget: number, default: 0, value_type: int, hint: "Plus le nombre est petit, plus l'athlète apparaît tôt." }
+      - {
+          name: hidden,
+          label: "Masquer du site",
+          widget: boolean,
+          default: false,
+          required: false,
+          hint: "Permet de préparer une fiche sans l'afficher publiquement.",
+        }
+      - {
+          name: order,
+          label: "Ordre d'affichage",
+          widget: number,
+          default: 0,
+          value_type: int,
+          hint: "Plus le nombre est petit, plus l'athlète apparaît tôt.",
+        }
 
   # ──────────────────────────── STAFF / ÉQUIPE ────────────────────────
   - name: team
@@ -70,10 +103,41 @@ collections:
     sortable_fields: [order, name]
     fields:
       - { name: name, label: "Nom", widget: string }
-      - { name: role, label: "Fonction", widget: string, hint: "Ex. : Entraîneur principal, Préparateur physique…" }
+      - {
+          name: role,
+          label: "Fonction",
+          widget: string,
+          hint: "Ex. : Entraîneur principal, Préparateur physique…",
+        }
       - { name: photo, label: "Photo", widget: image }
-      - { name: bio, label: "Présentation", widget: text, required: false, hint: "Une ou deux phrases." }
-      - { name: order, label: "Ordre d'affichage", widget: number, default: 0, value_type: int }
+      - {
+          name: photoAlt,
+          label: "Texte alternatif de la photo",
+          widget: string,
+          required: false,
+          hint: "Description courte pour l'accessibilité. Si vide, le nom est utilisé.",
+        }
+      - {
+          name: bio,
+          label: "Présentation",
+          widget: text,
+          required: false,
+          hint: "Une ou deux phrases.",
+        }
+      - {
+          name: hidden,
+          label: "Masquer du site",
+          widget: boolean,
+          default: false,
+          required: false,
+        }
+      - {
+          name: order,
+          label: "Ordre d'affichage",
+          widget: number,
+          default: 0,
+          value_type: int,
+        }
 
   # ───────────────────────────── ÉVÉNEMENTS ───────────────────────────
   - name: events
@@ -91,11 +155,79 @@ collections:
     fields:
       - { name: title, label: "Titre", widget: string }
       - { name: image, label: "Image", widget: image }
-      - { name: date, label: "Date", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
-      - { name: time, label: "Horaire", widget: string, required: false, hint: "Ex. : 09h00   ou   14h00 – 19h00" }
+      - {
+          name: imageAlt,
+          label: "Texte alternatif de l'image",
+          widget: string,
+          required: false,
+          hint: "Description courte pour l'accessibilité. Si vide, le titre est utilisé.",
+        }
+      - {
+          name: date,
+          label: "Date",
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: true,
+        }
+      - {
+          name: time,
+          label: "Horaire",
+          widget: string,
+          required: false,
+          hint: "Ex. : 09h00   ou   14h00 – 19h00",
+        }
       - { name: location, label: "Lieu", widget: string, required: false }
-      - { name: description, label: "Description", widget: text, required: false }
-      - { name: sourceUrl, label: "Lien externe (facultatif)", widget: string, required: false, pattern: ['^(https?://.+)?$', 'Doit commencer par https://'], hint: "Page officielle, billetterie, etc." }
+      - {
+          name: description,
+          label: "Description",
+          widget: text,
+          required: false,
+        }
+      - {
+          name: sourceUrl,
+          label: "Lien externe (facultatif)",
+          widget: string,
+          required: false,
+          pattern: ["^(https?://.+)?$", "Doit commencer par https://"],
+          hint: "Page officielle, billetterie, etc.",
+        }
+      - {
+          name: registrationUrl,
+          label: "Lien d'inscription",
+          widget: string,
+          required: false,
+          pattern: ["^(https?://.+)?$", "Doit commencer par https://"],
+          hint: "Prioritaire sur le lien externe si renseigné.",
+        }
+      - {
+          name: resultsUrl,
+          label: "Lien résultats",
+          widget: string,
+          required: false,
+          pattern: ["^(https?://.+)?$", "Doit commencer par https://"],
+        }
+      - {
+          name: ctaLabel,
+          label: "Texte du bouton/lien",
+          widget: string,
+          required: false,
+          hint: "Ex. : S'inscrire, Voir les résultats…",
+        }
+      - {
+          name: cancelled,
+          label: "Événement annulé",
+          widget: boolean,
+          default: false,
+          required: false,
+        }
+      - {
+          name: draft,
+          label: "Brouillon (ne pas publier)",
+          widget: boolean,
+          default: false,
+          required: false,
+        }
 
   # ──────────────────────────────── BLOG ──────────────────────────────
   - name: blog
@@ -112,10 +244,54 @@ collections:
     sortable_fields: [date, title]
     fields:
       - { name: title, label: "Titre", widget: string }
-      - { name: date, label: "Date", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, picker_utc: true }
+      - {
+          name: date,
+          label: "Date",
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          picker_utc: true,
+        }
       - { name: cover, label: "Image de couverture", widget: image }
-      - { name: excerpt, label: "Résumé", widget: text, hint: "1 à 2 phrases affichées dans la liste des articles." }
-      - { name: featured, label: "Mettre à la une", widget: boolean, default: false, hint: "Article mis en avant sur la page d'accueil." }
+      - {
+          name: coverAlt,
+          label: "Texte alternatif de l'image",
+          widget: string,
+          required: false,
+          hint: "Description courte pour l'accessibilité. Si vide, le titre est utilisé.",
+        }
+      - {
+          name: coverCaption,
+          label: "Légende de l'image",
+          widget: string,
+          required: false,
+        }
+      - {
+          name: coverCredit,
+          label: "Crédit photo",
+          widget: string,
+          required: false,
+        }
+      - {
+          name: excerpt,
+          label: "Résumé",
+          widget: text,
+          hint: "1 à 2 phrases affichées dans la liste des articles.",
+        }
+      - {
+          name: featured,
+          label: "Mettre à la une",
+          widget: boolean,
+          default: false,
+          hint: "Article mis en avant sur la page d'accueil.",
+        }
+      - {
+          name: draft,
+          label: "Brouillon (ne pas publier)",
+          widget: boolean,
+          default: false,
+          required: false,
+        }
       - name: tags
         label: "Étiquettes"
         widget: list
@@ -139,10 +315,45 @@ collections:
     sortable_fields: [order, date]
     fields:
       - { name: image, label: "Photo", widget: image }
+      - {
+          name: imageAlt,
+          label: "Texte alternatif de la photo",
+          widget: string,
+          required: false,
+          hint: "Description courte pour l'accessibilité. Si vide, le titre est utilisé.",
+        }
       - { name: title, label: "Titre", widget: string, required: false }
-      - { name: eventName, label: "Événement associé", widget: string, required: false }
-      - { name: date, label: "Date", widget: datetime, date_format: "YYYY-MM-DD", time_format: false, required: false, picker_utc: true }
-      - { name: order, label: "Ordre d'affichage", widget: number, default: 0, value_type: int }
+      - { name: caption, label: "Légende", widget: string, required: false }
+      - { name: credit, label: "Crédit photo", widget: string, required: false }
+      - {
+          name: eventName,
+          label: "Événement associé",
+          widget: string,
+          required: false,
+        }
+      - {
+          name: date,
+          label: "Date",
+          widget: datetime,
+          date_format: "YYYY-MM-DD",
+          time_format: false,
+          required: false,
+          picker_utc: true,
+        }
+      - {
+          name: hidden,
+          label: "Masquer du site",
+          widget: boolean,
+          default: false,
+          required: false,
+        }
+      - {
+          name: order,
+          label: "Ordre d'affichage",
+          widget: number,
+          default: 0,
+          value_type: int,
+        }
 
   # ────────────────────────────── PARTENAIRES ─────────────────────────
   - name: partners
@@ -160,8 +371,34 @@ collections:
     fields:
       - { name: name, label: "Nom", widget: string }
       - { name: logo, label: "Logo", widget: image }
-      - { name: url, label: "Site web", widget: string, required: false, pattern: ['^(https?://.+)?$', 'Doit commencer par https://'] }
-      - { name: order, label: "Ordre d'affichage", widget: number, default: 0, value_type: int }
+      - {
+          name: logoAlt,
+          label: "Texte alternatif du logo",
+          widget: string,
+          required: false,
+          hint: "Si vide, le nom du partenaire est utilisé.",
+        }
+      - {
+          name: url,
+          label: "Site web",
+          widget: string,
+          required: false,
+          pattern: ["^(https?://.+)?$", "Doit commencer par https://"],
+        }
+      - {
+          name: hidden,
+          label: "Masquer du site",
+          widget: boolean,
+          default: false,
+          required: false,
+        }
+      - {
+          name: order,
+          label: "Ordre d'affichage",
+          widget: number,
+          default: 0,
+          value_type: int,
+        }
 
   # ─────────────────────── RÉGLAGES (fichiers uniques) ─────────────────
   - name: settings
@@ -173,20 +410,212 @@ collections:
         file: "src/data/home.md"
         format: yaml-frontmatter
         fields:
-          - { name: heroTitle, label: "Titre principal (bandeau d'accueil)", widget: string }
-          - { name: heroAccent, label: "Mot mis en couleur", widget: string, hint: "Ce mot du titre s'affiche en couleur. Ex. : « Olympique »." }
-          - { name: heroSubtitle, label: "Sous-titre (bandeau d'accueil)", widget: text }
-          - { name: aboutTitle, label: "Titre « Qui sommes-nous ? »", widget: string }
-          - { name: aboutLead, label: "Accroche « Qui sommes-nous ? »", widget: string }
-          - { name: body, label: "Texte « Qui sommes-nous ? »", widget: markdown }
+          - {
+              name: heroTitle,
+              label: "Bandeau — titre principal",
+              widget: string,
+            }
+          - {
+              name: heroAccent,
+              label: "Bandeau — mot mis en couleur",
+              widget: string,
+              required: false,
+              hint: "Ce mot du titre s'affiche en couleur. Ex. : « Olympique ».",
+            }
+          - {
+              name: heroBadge,
+              label: "Bandeau — pastille au-dessus du titre",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: heroSubtitle,
+              label: "Bandeau — sous-titre",
+              widget: text,
+              required: false,
+            }
+          - {
+              name: heroCtaLabel,
+              label: "Bandeau — texte du bouton",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: heroCtaHref,
+              label: "Bandeau — lien du bouton",
+              widget: string,
+              required: false,
+              pattern:
+                [
+                  "^((https?://|/|#).*)?$",
+                  "Lien interne, ancre ou URL https://",
+                ],
+            }
+          - name: disciplines
+            label: "Ruban des disciplines"
+            widget: list
+            summary: "{{fields.entry}}"
+            field: { name: entry, label: "Discipline", widget: string }
+          - {
+              name: aboutEyebrow,
+              label: "À propos — petit titre",
+              widget: string,
+              required: false,
+            }
+          - { name: aboutTitle, label: "À propos — titre", widget: string }
+          - {
+              name: aboutDescription,
+              label: "À propos — description courte",
+              widget: text,
+              required: false,
+            }
+          - {
+              name: aboutImage,
+              label: "À propos — image",
+              widget: image,
+              required: false,
+            }
+          - {
+              name: aboutImageAlt,
+              label: "À propos — texte alternatif de l'image",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: aboutBadge,
+              label: "À propos — pastille sur l'image",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: partnersLabel,
+              label: "Partenaires — libellé",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: clubEyebrow,
+              label: "Le club — petit titre",
+              widget: string,
+              required: false,
+            }
+          - { name: clubTitle, label: "Le club — titre", widget: string }
+          - {
+              name: clubDescription,
+              label: "Le club — description",
+              widget: text,
+              required: false,
+            }
+          - {
+              name: teamHeading,
+              label: "Le club — sous-titre staff",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: athletesHeading,
+              label: "Le club — sous-titre athlètes",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: newsEyebrow,
+              label: "Actualités — petit titre",
+              widget: string,
+              required: false,
+            }
+          - { name: newsTitle, label: "Actualités — titre", widget: string }
+          - {
+              name: newsDescription,
+              label: "Actualités — description",
+              widget: text,
+              required: false,
+            }
+          - {
+              name: newsMoreLabel,
+              label: "Actualités — lien vers tous les articles",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: socialEyebrow,
+              label: "Réseaux sociaux — petit titre",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: socialTitle,
+              label: "Réseaux sociaux — titre",
+              widget: string,
+            }
+          - {
+              name: socialDescription,
+              label: "Réseaux sociaux — description",
+              widget: text,
+              required: false,
+            }
+          - {
+              name: contactEyebrow,
+              label: "Contact — petit titre",
+              widget: string,
+              required: false,
+            }
+          - { name: contactTitle, label: "Contact — titre", widget: string }
+          - {
+              name: contactDescription,
+              label: "Contact — description",
+              widget: text,
+              required: false,
+            }
+          - {
+              name: upcomingHeading,
+              label: "Contact — sous-titre événements",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: eventsMoreLabel,
+              label: "Contact — lien vers tous les événements",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: contactHeading,
+              label: "Contact — sous-titre coordonnées",
+              widget: string,
+              required: false,
+            }
+          - {
+              name: body,
+              label: "Texte « Qui sommes-nous ? »",
+              widget: markdown,
+            }
 
       - name: contact
         label: "Contact"
         file: "src/data/contact.json"
         fields:
-          - { name: phone, label: "Téléphone", widget: string }
-          - { name: phoneSecondary, label: "Téléphone secondaire", widget: string, required: false }
-          - { name: email, label: "E-mail", widget: string }
+          - {
+              name: phone,
+              label: "Téléphone",
+              widget: string,
+              pattern: ['^\+?[0-9 .()/-]{7,}$', "Numéro de téléphone invalide"],
+            }
+          - {
+              name: phoneSecondary,
+              label: "Téléphone secondaire",
+              widget: string,
+              required: false,
+              pattern:
+                ['^(\+?[0-9 .()/-]{7,})?$', "Numéro de téléphone invalide"],
+            }
+          - {
+              name: email,
+              label: "E-mail",
+              widget: string,
+              pattern:
+                ['^[^@\s]+@[^@\s]+\.[^@\s]+$', "Adresse e-mail invalide"],
+            }
           - name: address
             label: "Emplacement (fixe — normalement à ne pas modifier)"
             widget: object
@@ -200,10 +629,79 @@ collections:
             widget: object
             collapsed: true
             fields:
-              - { name: lat, label: "Latitude", widget: number, value_type: float }
-              - { name: lng, label: "Longitude", widget: number, value_type: float }
+              - {
+                  name: lat,
+                  label: "Latitude",
+                  widget: number,
+                  value_type: float,
+                }
+              - {
+                  name: lng,
+                  label: "Longitude",
+                  widget: number,
+                  value_type: float,
+                }
               - { name: zoom, label: "Zoom", widget: number, value_type: int }
               - { name: label, label: "Étiquette de la carte", widget: string }
+
+      - name: pages
+        label: "Pages secondaires — titres & référencement"
+        file: "src/data/pages.json"
+        fields:
+          - name: blog
+            label: "Page Blog"
+            widget: object
+            fields:
+              - { name: title, label: "Titre SEO", widget: string }
+              - { name: description, label: "Description SEO", widget: text }
+              - {
+                  name: heroEyebrow,
+                  label: "Petit titre du bandeau",
+                  widget: string,
+                  required: false,
+                }
+              - { name: heroTitle, label: "Titre du bandeau", widget: string }
+          - name: events
+            label: "Page Calendrier"
+            widget: object
+            fields:
+              - { name: title, label: "Titre SEO", widget: string }
+              - { name: description, label: "Description SEO", widget: text }
+              - {
+                  name: heroEyebrow,
+                  label: "Petit titre du bandeau",
+                  widget: string,
+                  required: false,
+                }
+              - { name: heroTitle, label: "Titre du bandeau", widget: string }
+              - {
+                  name: upcomingHeading,
+                  label: "Titre des événements à venir",
+                  widget: string,
+                }
+              - {
+                  name: pastHeading,
+                  label: "Titre des événements passés",
+                  widget: string,
+                }
+              - {
+                  name: emptyMessage,
+                  label: "Message si aucun événement",
+                  widget: text,
+                }
+          - name: gallery
+            label: "Page Galerie"
+            widget: object
+            fields:
+              - { name: title, label: "Titre SEO", widget: string }
+              - { name: description, label: "Description SEO", widget: text }
+              - {
+                  name: heroEyebrow,
+                  label: "Petit titre du bandeau",
+                  widget: string,
+                  required: false,
+                }
+              - { name: heroTitle, label: "Titre du bandeau", widget: string }
 
       - name: site
         label: "Général & navigation"
@@ -212,22 +710,52 @@ collections:
           - { name: name, label: "Nom du club", widget: string }
           - { name: shortName, label: "Sigle", widget: string }
           - { name: tagline, label: "Devise", widget: string }
-          - { name: description, label: "Description (référencement / SEO)", widget: text }
-          - { name: copyrightYear, label: "Année (bas de page)", widget: number, value_type: int }
+          - {
+              name: description,
+              label: "Description (référencement / SEO)",
+              widget: text,
+            }
+          - {
+              name: copyrightYear,
+              label: "Année (bas de page)",
+              widget: number,
+              value_type: int,
+            }
           - name: nav
             label: "Menu de navigation"
             widget: list
             summary: "{{fields.label}}"
             fields:
               - { name: label, label: "Libellé", widget: string }
-              - { name: href, label: "Lien", widget: string, hint: "Ex. : /galerie   ou   /#contact" }
+              - {
+                  name: href,
+                  label: "Lien",
+                  widget: string,
+                  pattern:
+                    [
+                      "^(https?://|/|#).+$",
+                      "Lien interne, ancre ou URL https://",
+                    ],
+                  hint: "Ex. : /galerie   ou   /#contact",
+                }
           - name: stats
             label: "Chiffres clés (compteurs animés)"
             widget: list
             summary: "{{fields.value}}{{fields.suffix}} — {{fields.label}}"
             fields:
-              - { name: value, label: "Nombre", widget: number, value_type: int }
-              - { name: suffix, label: "Suffixe", widget: string, required: false, hint: "Ex. : +" }
+              - {
+                  name: value,
+                  label: "Nombre",
+                  widget: number,
+                  value_type: int,
+                }
+              - {
+                  name: suffix,
+                  label: "Suffixe",
+                  widget: string,
+                  required: false,
+                  hint: "Ex. : +",
+                }
               - { name: label, label: "Libellé", widget: string }
           - name: social
             label: "Réseaux sociaux"
@@ -235,7 +763,27 @@ collections:
             summary: "{{fields.label}}"
             fields:
               - { name: label, label: "Réseau", widget: string }
-              - { name: href, label: "Lien", widget: string }
-              - { name: icon, label: "Icône", widget: select, options: [instagram, tiktok, facebook, youtube, x, linkedin] }
-              - { name: handle, label: "Identifiant (@…)", widget: string, required: false }
-              - { name: blurb, label: "Petite description", widget: string, required: false }
+              - {
+                  name: href,
+                  label: "Lien",
+                  widget: string,
+                  pattern: ["^https?://.+$", "Doit commencer par https://"],
+                }
+              - {
+                  name: icon,
+                  label: "Icône",
+                  widget: select,
+                  options: [instagram, tiktok, facebook, youtube, x, linkedin],
+                }
+              - {
+                  name: handle,
+                  label: "Identifiant (@…)",
+                  widget: string,
+                  required: false,
+                }
+              - {
+                  name: blurb,
+                  label: "Petite description",
+                  widget: string,
+                  required: false,
+                }

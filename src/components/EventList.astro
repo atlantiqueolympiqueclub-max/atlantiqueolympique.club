@@ -13,70 +13,93 @@ const { events, past = false } = Astro.props;
 const fmtDay = new Intl.DateTimeFormat('fr-FR', { day: '2-digit' });
 const fmtMonth = new Intl.DateTimeFormat('fr-FR', { month: 'short' });
 const fmtFull = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+const eventAction = (event: CollectionEntry<'events'>) => {
+  if (!event.data.cancelled && event.data.registrationUrl) {
+    return { href: event.data.registrationUrl, label: event.data.ctaLabel ?? "S'inscrire" };
+  }
+  if (event.data.resultsUrl) {
+    return { href: event.data.resultsUrl, label: event.data.ctaLabel ?? 'Résultats' };
+  }
+  if (event.data.sourceUrl) {
+    return { href: event.data.sourceUrl, label: event.data.ctaLabel ?? "Lien de l'événement" };
+  }
+  return null;
+};
 ---
 
 <ul class="space-y-4">
-  {events.map((e) => (
-    <li class="card-aoc group grid gap-4 p-4 sm:grid-cols-[12rem_1fr] sm:gap-5" data-reveal>
-      <div class="relative overflow-clip rounded-xl">
-        <SmartImage
-          src={e.data.image}
-          alt={e.data.title}
-          class:list={[
-            'aspect-[4/3] w-full transition-transform duration-700 group-hover:scale-105 sm:h-full',
-            past && 'opacity-80 saturate-[0.6]',
-          ]}
-          rounded="rounded-none"
-        />
-        <div class="absolute left-2.5 top-2.5 min-w-[3.25rem] rounded-xl bg-white/95 px-2 py-1.5 text-center shadow-md backdrop-blur">
-          <p class="font-display text-lg font-extrabold leading-none text-navy">{fmtDay.format(e.data.date)}</p>
-          <p class="mt-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-aoc-600">
-            {fmtMonth.format(e.data.date).replace('.', '')} {e.data.date.getFullYear()}
-          </p>
+  {events.map((e) => {
+    const action = eventAction(e);
+    return (
+      <li class="card-aoc group grid gap-4 p-4 sm:grid-cols-[12rem_1fr] sm:gap-5" data-reveal>
+        <div class="relative overflow-clip rounded-xl">
+          <SmartImage
+            src={e.data.image}
+            alt={e.data.imageAlt ?? e.data.title}
+            class:list={[
+              'aspect-[4/3] w-full transition-transform duration-700 group-hover:scale-105 sm:h-full',
+              past && 'opacity-80 saturate-[0.6]',
+            ]}
+            rounded="rounded-none"
+          />
+          <div class="absolute left-2.5 top-2.5 min-w-[3.25rem] rounded-xl bg-white/95 px-2 py-1.5 text-center shadow-md backdrop-blur">
+            <p class="font-display text-lg font-extrabold leading-none text-navy">{fmtDay.format(e.data.date)}</p>
+            <p class="mt-0.5 text-[0.6rem] font-bold uppercase tracking-wide text-aoc-600">
+              {fmtMonth.format(e.data.date).replace('.', '')} {e.data.date.getFullYear()}
+            </p>
+          </div>
         </div>
-      </div>
 
-      <div class="flex flex-col">
-        <h3 class="text-lg font-bold text-navy transition-colors group-hover:text-aoc-700">{e.data.title}</h3>
-        {(e.data.location || e.data.time) && (
-          <div class="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-slate-500">
-            {e.data.location && (
-              <span class="inline-flex items-center gap-1">
-                <Icon name="map-pin" class="h-3.5 w-3.5 text-aoc-500" />
-                {e.data.location}
-              </span>
-            )}
-            {e.data.time && (
-              <span class="inline-flex items-center gap-1">
-                <Icon name="clock" class="h-3.5 w-3.5 text-aoc-500" />
-                {e.data.time}
+        <div class="flex flex-col">
+          <div class="flex flex-wrap items-center gap-2">
+            <h3 class="text-lg font-bold text-navy transition-colors group-hover:text-aoc-700">{e.data.title}</h3>
+            {e.data.cancelled && (
+              <span class="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-rose-700">
+                Annulé
               </span>
             )}
           </div>
-        )}
-        {e.data.description && (
-          <p class="mt-1.5 line-clamp-2 text-sm leading-6 text-slate-600">{e.data.description}</p>
-        )}
-        <div class="mt-auto flex flex-wrap items-center justify-between gap-2 pt-3 text-sm">
-          {e.data.sourceUrl ? (
-            <a
-              href={e.data.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="link-arrow text-sm"
-            >
-              Lien de l'événement (source)
-              <Icon name="external-link" class="h-3.5 w-3.5" />
-            </a>
-          ) : (
-            <span class="text-slate-400">Source à venir</span>
+          {(e.data.location || e.data.time) && (
+            <div class="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs font-medium text-slate-500">
+              {e.data.location && (
+                <span class="inline-flex items-center gap-1">
+                  <Icon name="map-pin" class="h-3.5 w-3.5 text-aoc-500" />
+                  {e.data.location}
+                </span>
+              )}
+              {e.data.time && (
+                <span class="inline-flex items-center gap-1">
+                  <Icon name="clock" class="h-3.5 w-3.5 text-aoc-500" />
+                  {e.data.time}
+                </span>
+              )}
+            </div>
           )}
-          <span class="inline-flex items-center gap-1.5 font-medium text-slate-500">
-            <Icon name="calendar" class="h-4 w-4 text-aoc-500" />
-            {fmtFull.format(e.data.date)}
-          </span>
+          {e.data.description && (
+            <p class="mt-1.5 line-clamp-2 text-sm leading-6 text-slate-600">{e.data.description}</p>
+          )}
+          <div class="mt-auto flex flex-wrap items-center justify-between gap-2 pt-3 text-sm">
+            {action ? (
+              <a
+                href={action.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="link-arrow text-sm"
+              >
+                {action.label}
+                <Icon name="external-link" class="h-3.5 w-3.5" />
+              </a>
+            ) : (
+              <span class="text-slate-400">Source à venir</span>
+            )}
+            <span class="inline-flex items-center gap-1.5 font-medium text-slate-500">
+              <Icon name="calendar" class="h-4 w-4 text-aoc-500" />
+              {fmtFull.format(e.data.date)}
+            </span>
+          </div>
         </div>
-      </div>
-    </li>
-  ))}
+      </li>
+    );
+  })}
 </ul>

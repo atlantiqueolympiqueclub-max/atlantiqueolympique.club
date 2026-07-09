@@ -3,17 +3,16 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHero from '../../components/PageHero.astro';
 import BlogCard from '../../components/BlogCard.astro';
+import pages from '../../data/pages.json';
 
-const posts = (await getCollection('blog')).sort(
+const page = pages.blog;
+const posts = (await getCollection('blog')).filter((post) => !post.data.draft).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
 );
 ---
 
-<BaseLayout
-  title="Blog"
-  description="Actualités, conseils et résultats de l'Atlantique Olympique Club."
->
-  <PageHero eyebrow="Actualités" title="Blog" />
+<BaseLayout title={page.title} description={page.description}>
+  <PageHero eyebrow={page.heroEyebrow} title={page.heroTitle} />
 
   <section class="container-aoc py-14 sm:py-20">
     <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

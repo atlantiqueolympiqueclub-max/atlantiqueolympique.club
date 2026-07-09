@@ -29,7 +29,7 @@ src/
 │                 ContactBar, MapEmbed, WaveDivider, SwimDivider, DeepWater, …
 ├── content/      team/ athletes/ events/ blog/ gallery/ partners/  (Markdown)
 ├── content.config.ts   collection schemas (validated at build time)
-├── data/         site.json · contact.json · home.md  (singletons)
+├── data/         site.json · contact.json · pages.json · home.md  (singletons)
 ├── layouts/      BaseLayout.astro
 ├── pages/        index · evenements · galerie · blog/[…]
 └── styles/       global.css  (Tailwind v4 + AOC design tokens)
@@ -59,6 +59,7 @@ Every section is also plain Markdown/JSON you can edit directly. Examples:
 - **Add a blog post** → `src/content/blog/<slug>.md` (Markdown body + frontmatter).
 - **Team / athletes / gallery / partners** → matching folders under `src/content/`.
 - **Phone / email / address / map** → `src/data/contact.json`.
+- **Secondary page titles / SEO** → `src/data/pages.json`.
 - **Nav & social links** → `src/data/site.json`.
 - **"Le club en chiffres" numbers** → `src/data/site.json` → `stats` (the
   homepage counters animate to these values on scroll).
@@ -95,4 +96,3 @@ make deploy SERVER=deploy@aoc.sn REMOTE_DIR=/var/www/aoc/dist
 - [ ] Real contact details in `src/data/contact.json`.
 - [ ] Real domain in `astro.config.mjs` (`site`) and `Caddyfile`.
 - [ ] Replace placeholder content & images with the real thing.
-```

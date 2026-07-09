@@ -12,9 +12,10 @@ const tel = (n: string) => 'tel:' + n.replace(/[^+\d]/g, '');
 const addr = [contact.address.street, contact.address.city, contact.address.country]
   .filter(Boolean)
   .join(', ');
+const contactGrid = stacked ? '' : contact.phoneSecondary ? 'sm:grid-cols-2 lg:grid-cols-4' : 'sm:grid-cols-3';
 ---
 
-<div class:list={['grid gap-3', stacked ? '' : 'sm:grid-cols-3']}>
+<div class:list={['grid gap-3', contactGrid]}>
   <a href={tel(contact.phone)} class="card-aoc group flex items-center gap-3.5 p-4" data-reveal>
     <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-aoc-400 to-aoc-600 text-white shadow-md shadow-aoc-500/30 transition-transform duration-300 group-hover:scale-110">
       <Icon name="phone" class="h-5 w-5" />
@@ -25,7 +26,19 @@ const addr = [contact.address.street, contact.address.city, contact.address.coun
     </span>
   </a>
 
-  <a href={`mailto:${contact.email}`} class="card-aoc group flex items-center gap-3.5 p-4" data-reveal style="--dr:1">
+  {contact.phoneSecondary && (
+    <a href={tel(contact.phoneSecondary)} class="card-aoc group flex items-center gap-3.5 p-4" data-reveal style="--dr:1">
+      <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-aoc-400 to-aoc-600 text-white shadow-md shadow-aoc-500/30 transition-transform duration-300 group-hover:scale-110">
+        <Icon name="phone" class="h-5 w-5" />
+      </span>
+      <span class="min-w-0">
+        <span class="block text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Téléphone secondaire</span>
+        <span class="block truncate font-semibold text-navy">{contact.phoneSecondary}</span>
+      </span>
+    </a>
+  )}
+
+  <a href={`mailto:${contact.email}`} class="card-aoc group flex items-center gap-3.5 p-4" data-reveal style={contact.phoneSecondary ? '--dr:2' : '--dr:1'}>
     <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-aoc-400 to-aoc-600 text-white shadow-md shadow-aoc-500/30 transition-transform duration-300 group-hover:scale-110">
       <Icon name="mail" class="h-5 w-5" />
     </span>
@@ -35,7 +48,7 @@ const addr = [contact.address.street, contact.address.city, contact.address.coun
     </span>
   </a>
 
-  <div class="card-aoc flex items-center gap-3.5 p-4" data-reveal style="--dr:2">
+  <div class="card-aoc flex items-center gap-3.5 p-4" data-reveal style={contact.phoneSecondary ? '--dr:3' : '--dr:2'}>
     <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-aoc-400 to-aoc-600 text-white shadow-md shadow-aoc-500/30">
       <Icon name="map-pin" class="h-5 w-5" />
     </span>
@@ -46,7 +59,7 @@ const addr = [contact.address.street, contact.address.city, contact.address.coun
   </div>
 </div>
 
-<div class="mt-5 flex flex-wrap items-center gap-3" data-reveal style="--dr:3">
+<div class="mt-5 flex flex-wrap items-center gap-3" data-reveal style={contact.phoneSecondary ? '--dr:4' : '--dr:3'}>
   <span class="text-sm font-semibold text-slate-500">Suivez-nous :</span>
   <ul class="flex items-center gap-2">
     {site.social.map((s) => (

@@ -14,7 +14,12 @@ const { items, closeHref = '#galerie' } = Astro.props;
 const fmt = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
 
 const caption = (it: CollectionEntry<'gallery'>) => {
-  const bits = [it.data.eventName, it.data.date ? fmt.format(it.data.date) : undefined].filter(Boolean);
+  const bits = [
+    it.data.caption,
+    it.data.eventName,
+    it.data.date ? fmt.format(it.data.date) : undefined,
+    it.data.credit,
+  ].filter(Boolean);
   return bits.join(', ');
 };
 ---
@@ -29,7 +34,7 @@ const caption = (it: CollectionEntry<'gallery'>) => {
       <a href={`#photo-${it.id}`} aria-label={it.data.title ?? 'Agrandir la photo'}>
         <SmartImage
           src={it.data.image}
-          alt={it.data.title ?? ''}
+          alt={it.data.imageAlt ?? it.data.title ?? ''}
           class="w-full transition-transform duration-700 group-hover:scale-[1.06]"
           rounded="rounded-none"
         />
@@ -82,7 +87,7 @@ const caption = (it: CollectionEntry<'gallery'>) => {
       <figure class="relative max-h-full max-w-3xl">
         <SmartImage
           src={it.data.image}
-          alt={it.data.title ?? ''}
+          alt={it.data.imageAlt ?? it.data.title ?? ''}
           class="max-h-[80vh] w-full shadow-2xl shadow-navy/50"
           rounded="rounded-2xl"
           loading="eager"

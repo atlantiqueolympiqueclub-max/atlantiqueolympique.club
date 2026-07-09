@@ -5,7 +5,7 @@ import Logo from './Logo.astro';
 import Icon from './Icon.astro';
 import DeepWater from './DeepWater.astro';
 
-const year = new Date().getFullYear();
+const year = site.copyrightYear ?? new Date().getFullYear();
 const tel = (n: string) => 'tel:' + n.replace(/[^+\d]/g, '');
 ---
 
@@ -73,6 +73,14 @@ const tel = (n: string) => 'tel:' + n.replace(/[^+\d]/g, '');
               {contact.phone}
             </a>
           </li>
+          {contact.phoneSecondary && (
+            <li>
+              <a href={tel(contact.phoneSecondary)} class="inline-flex items-center gap-2 text-slate-300 transition hover:text-white">
+                <Icon name="phone" class="h-4 w-4 text-aoc-300" />
+                {contact.phoneSecondary}
+              </a>
+            </li>
+          )}
           <li>
             <a href={`mailto:${contact.email}`} class="inline-flex items-center gap-2 text-slate-300 transition hover:text-white">
               <Icon name="mail" class="h-4 w-4 text-aoc-300" />

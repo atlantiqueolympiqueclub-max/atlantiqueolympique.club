@@ -15,7 +15,7 @@ const fmt = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short', y
   <div class="relative overflow-clip" transition:name={`cover-${post.id}`}>
     <SmartImage
       src={post.data.cover}
-      alt=""
+      alt={post.data.coverAlt ?? ''}
       class="aspect-[16/10] w-full transition-transform duration-700 group-hover:scale-[1.05]"
       rounded="rounded-none"
     />

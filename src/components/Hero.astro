@@ -16,8 +16,18 @@ interface Props {
   subtitle?: string;
   /** Word of `title` to render with the flowing water gradient. */
   accent?: string;
+  badge?: string;
+  ctaLabel?: string;
+  ctaHref?: string;
 }
-const { title, subtitle, accent } = Astro.props;
+const {
+  title,
+  subtitle,
+  accent,
+  badge = 'Club de natation · Dakar',
+  ctaLabel = 'Découvrir le club',
+  ctaHref = '/#a-propos',
+} = Astro.props;
 
 const words = title.split(/\s+/);
 const norm = (w: string) =>
@@ -49,7 +59,7 @@ const WAVE =
         <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-aoc-300 opacity-75 motion-reduce:hidden"></span>
         <span class="relative inline-flex h-2 w-2 rounded-full bg-aoc-300"></span>
       </span>
-      Club de natation · Dakar
+      {badge}
     </p>
 
     <h1 class="mt-7 max-w-4xl font-display text-[clamp(2.7rem,1.5rem+5.4vw,5.2rem)] font-black leading-[1.04] tracking-tight">
@@ -79,11 +89,11 @@ const WAVE =
 
     <div class="anim-load mt-9 flex flex-wrap items-center gap-4" style="--d:800">
       <a
-        href="/#a-propos"
+        href={ctaHref}
         data-magnet
         class="btn-shine group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold uppercase tracking-wide text-navy shadow-xl shadow-navy/25 transition-colors hover:bg-aoc-50"
       >
-        Découvrir le club
+        {ctaLabel}
         <Icon name="arrow-right" class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
       </a>
     </div>
@@ -92,7 +102,7 @@ const WAVE =
   <!-- Scroll cue -->
   <div class="absolute bottom-[7.5rem] left-1/2 hidden -translate-x-1/2 sm:block">
     <a
-      href="/#a-propos"
+      href={ctaHref}
       class="anim-load flex flex-col items-center text-aoc-100/70 transition-colors hover:text-white"
       style="--d:1200"
       aria-label="Faire défiler vers la section À propos"

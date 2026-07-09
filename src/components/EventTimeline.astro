@@ -42,6 +42,18 @@ const fmtFull = new Intl.DateTimeFormat('fr-FR', {
   year: 'numeric',
 });
 const shortMonth = (d: Date) => fmtMonth.format(d).replace('.', '');
+const eventAction = (event: CollectionEntry<'events'>) => {
+  if (!event.data.cancelled && event.data.registrationUrl) {
+    return { href: event.data.registrationUrl, label: event.data.ctaLabel ?? "S'inscrire" };
+  }
+  if (event.data.resultsUrl) {
+    return { href: event.data.resultsUrl, label: event.data.ctaLabel ?? 'Résultats' };
+  }
+  if (event.data.sourceUrl) {
+    return { href: event.data.sourceUrl, label: event.data.ctaLabel ?? "Lien de l'événement" };
+  }
+  return null;
+};
 ---
 
 <div class="timeline" data-reveal="fade">
@@ -66,6 +78,7 @@ const shortMonth = (d: Date) => fmtMonth.format(d).replace('.', '');
           <ul class="tl-rows">
             {group.events.map((e, ei) => {
               const isNext = Boolean(phase.highlightNext && gi === 0 && ei === 0);
+              const action = eventAction(e);
               return (
                 <li class:list={['tl-row', isNext && 'is-next']} data-reveal>
                   <div class="tl-rail">
@@ -79,7 +92,7 @@ const shortMonth = (d: Date) => fmtMonth.format(d).replace('.', '');
                     <div class="tl-thumb">
                       <SmartImage
                         src={e.data.image}
-                        alt={e.data.title}
+                        alt={e.data.imageAlt ?? e.data.title}
                         class:list={['tl-img', phase.past && 'opacity-80 saturate-[0.6]']}
                         rounded="rounded-none"
                       />
@@ -92,7 +105,14 @@ const shortMonth = (d: Date) => fmtMonth.format(d).replace('.', '');
                           Prochainement
                         </span>
                       )}
-                      <h3 class="tl-title">{e.data.title}</h3>
+                      <div class="flex flex-wrap items-center gap-2">
+                        <h3 class="tl-title">{e.data.title}</h3>
+                        {e.data.cancelled && (
+                          <span class="rounded-full bg-rose-50 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-rose-700">
+                            Annulé
+                          </span>
+                        )}
+                      </div>
                       {(e.data.location || e.data.time) && (
                         <div class="tl-meta">
                           {e.data.location && (
@@ -112,14 +132,14 @@ const shortMonth = (d: Date) => fmtMonth.format(d).replace('.', '');
                       {e.data.description && <p class="tl-desc">{e.data.description}</p>}
 
                       <div class="tl-foot">
-                        {e.data.sourceUrl ? (
+                        {action ? (
                           <a
-                            href={e.data.sourceUrl}
+                            href={action.href}
                             target="_blank"
                             rel="noopener noreferrer"
                             class="link-arrow text-sm"
                           >
-                            Lien de l'événement
+                            {action.label}
                             <Icon name="external-link" class="h-3.5 w-3.5" />
                           </a>
                         ) : (
