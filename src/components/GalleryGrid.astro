@@ -1,0 +1,106 @@
+---
+import SmartImage from './SmartImage.astro';
+import Icon from './Icon.astro';
+import type { CollectionEntry } from 'astro:content';
+
+/**
+ * Masonry-ish gallery with a pure-CSS (:target) lightbox — no JS.
+ */
+interface Props {
+  items: CollectionEntry<'gallery'>[];
+  closeHref?: string; // where the lightbox "close" returns to
+}
+const { items, closeHref = '#galerie' } = Astro.props;
+const fmt = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+const caption = (it: CollectionEntry<'gallery'>) => {
+  const bits = [it.data.eventName, it.data.date ? fmt.format(it.data.date) : undefined].filter(Boolean);
+  return bits.join(', ');
+};
+---
+
+<div class="columns-2 gap-4 sm:columns-3 [&>*]:mb-4">
+  {items.map((it, i) => (
+    <figure
+      class="group relative break-inside-avoid overflow-clip rounded-2xl border border-slate-200 shadow-sm transition-all duration-300 hover:border-aoc-200 hover:shadow-xl hover:shadow-aoc-500/15"
+      data-reveal
+      style={`--dr:${i % 3}`}
+    >
+      <a href={`#photo-${it.id}`} aria-label={it.data.title ?? 'Agrandir la photo'}>
+        <SmartImage
+          src={it.data.image}
+          alt={it.data.title ?? ''}
+          class="w-full transition-transform duration-700 group-hover:scale-[1.06]"
+          rounded="rounded-none"
+        />
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy/75 via-navy/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+        <span
+          class="pointer-events-none absolute right-3 top-3 inline-flex h-8 w-8 -translate-y-1 items-center justify-center rounded-full bg-white/90 text-navy opacity-0 shadow backdrop-blur transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+          aria-hidden="true"
+        >
+          <Icon name="arrow-up" class="h-4 w-4 rotate-45" />
+        </span>
+        {(it.data.title || caption(it)) && (
+          <figcaption class="pointer-events-none absolute inset-x-0 bottom-0 translate-y-2 p-3.5 text-white opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+            {it.data.title && <p class="text-sm font-bold">{it.data.title}</p>}
+            {caption(it) && <p class="mt-0.5 text-xs text-white/80">{caption(it)}</p>}
+          </figcaption>
+        )}
+      </a>
+    </figure>
+  ))}
+</div>
+
+<!-- Pure-CSS lightbox overlays (prev/next are plain :target links) -->
+{items.map((it, i) => {
+  const prev = items[(i - 1 + items.length) % items.length];
+  const next = items[(i + 1) % items.length];
+  const arrow =
+    'absolute top-1/2 z-10 inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full glass text-white shadow-lg shadow-navy/40 transition-colors hover:bg-aoc-500/80 sm:h-12 sm:w-12';
+  return (
+    <div
+      id={`photo-${it.id}`}
+      class="lightbox fixed inset-0 z-[60] hidden items-center justify-center bg-navy/90 p-4 backdrop-blur-sm target:flex"
+    >
+      <a href={closeHref} class="absolute inset-0" aria-label="Fermer"></a>
+
+      <span class="glass absolute left-4 top-4 rounded-full px-3.5 py-1 text-xs font-bold tracking-[0.14em] text-white">
+        {i + 1} / {items.length}
+      </span>
+
+      {items.length > 1 && (
+        <>
+          <a href={`#photo-${prev.id}`} class:list={[arrow, 'left-3 sm:left-5']} aria-label="Photo précédente">
+            <Icon name="arrow-left" class="h-5 w-5" />
+          </a>
+          <a href={`#photo-${next.id}`} class:list={[arrow, 'right-3 sm:right-5']} aria-label="Photo suivante">
+            <Icon name="arrow-right" class="h-5 w-5" />
+          </a>
+        </>
+      )}
+
+      <figure class="relative max-h-full max-w-3xl">
+        <SmartImage
+          src={it.data.image}
+          alt={it.data.title ?? ''}
+          class="max-h-[80vh] w-full shadow-2xl shadow-navy/50"
+          rounded="rounded-2xl"
+          loading="eager"
+        />
+        {(it.data.title || caption(it)) && (
+          <figcaption class="mt-3 text-center text-white">
+            {it.data.title && <span class="font-semibold">{it.data.title}</span>}
+            {caption(it) && <span class="text-white/70"> — {caption(it)}</span>}
+          </figcaption>
+        )}
+        <a
+          href={closeHref}
+          class="absolute -right-2 -top-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-navy shadow-lg transition-transform duration-300 hover:rotate-90 hover:bg-aoc-50"
+          aria-label="Fermer"
+        >
+          <Icon name="close" class="h-5 w-5" />
+        </a>
+      </figure>
+    </div>
+  );
+})}

@@ -1,0 +1,42 @@
+---
+/**
+ * A section rendered as a living body of water by public/js/deep-fx.js:
+ * caustic light, godrays, cursor-light, ripples and rising particulate.
+ *
+ * Purely decorative and progressive: without JS — or under
+ * prefers-reduced-motion — the canvas stays empty/hidden and the section
+ * simply keeps its CSS background.
+ *
+ *   intensity   — overall strength of the light (hero ~1, deep bands ~0.4)
+ *   rays        — cast volumetric godrays from the top ("surface")
+ *   surface     — mark this as just-below-the-surface (brighter top)
+ *   depthReact  — dim + deepen as the page scrolls (use on the hero)
+ *   color       — tint for particulate & ripples (hex)
+ *   class       — extra classes; use it to slot the canvas into the z-stack
+ */
+interface Props {
+  intensity?: number;
+  rays?: boolean;
+  surface?: boolean;
+  depthReact?: boolean;
+  color?: string;
+  class?: string;
+}
+const {
+  intensity = 1,
+  rays = false,
+  surface = false,
+  depthReact = false,
+  color = '#e7fcff',
+  class: className = '',
+} = Astro.props;
+---
+
+<canvas
+  class:list={['fx-deep', className]}
+  data-deep={String(intensity)}
+  data-deep-rays={rays ? '1' : ''}
+  data-deep-surface={surface ? '1' : ''}
+  data-deep-depth={depthReact ? '1' : ''}
+  data-deep-color={color}
+  aria-hidden="true"></canvas>

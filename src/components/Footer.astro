@@ -1,0 +1,98 @@
+---
+import site from '../data/site.json';
+import contact from '../data/contact.json';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import DeepWater from './DeepWater.astro';
+
+const year = new Date().getFullYear();
+const tel = (n: string) => 'tel:' + n.replace(/[^+\d]/g, '');
+---
+
+<footer class="relative isolate overflow-clip bg-navy text-slate-300">
+  <!-- The deep: soft azure glow + the faintest caustic light, purely decorative -->
+  <div
+    class="blob -z-10 left-[8%] top-[-6rem] h-72 w-72 bg-aoc-500/15"
+    data-late
+    aria-hidden="true"
+  >
+  </div>
+  <div class="blob -z-10 right-[4%] bottom-[-8rem] h-80 w-80 bg-aoc-400/10" aria-hidden="true"></div>
+  <DeepWater class="-z-10" intensity={0.36} color="#cfeeff" />
+
+  <div class="container-aoc py-16">
+    <div class="grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
+      <!-- Brand -->
+      <div>
+        <Logo light />
+        <p class="mt-4 max-w-xs text-sm leading-relaxed text-slate-400">
+          {site.description}
+        </p>
+        <ul class="mt-5 flex items-center gap-2">
+          {site.social.map((s) => (
+            <li>
+              <a
+                href={s.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all duration-300 hover:-translate-y-1 hover:bg-aoc-400 hover:shadow-lg hover:shadow-aoc-400/30"
+                aria-label={s.label}
+              >
+                <Icon name={s.icon} class="h-4 w-4" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Quick links -->
+      <div>
+        <p class="font-display text-xs font-bold uppercase tracking-[0.18em] text-aoc-300/80">Navigation</p>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          {site.nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class="group inline-flex items-center gap-1.5 text-slate-300 transition hover:text-white"
+              >
+                <span class="h-px w-0 bg-aoc-400 transition-all duration-300 group-hover:w-3" aria-hidden="true"></span>
+                {item.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <p class="font-display text-xs font-bold uppercase tracking-[0.18em] text-aoc-300/80">Contact</p>
+        <ul class="mt-4 space-y-2.5 text-sm">
+          <li>
+            <a href={tel(contact.phone)} class="inline-flex items-center gap-2 text-slate-300 transition hover:text-white">
+              <Icon name="phone" class="h-4 w-4 text-aoc-300" />
+              {contact.phone}
+            </a>
+          </li>
+          <li>
+            <a href={`mailto:${contact.email}`} class="inline-flex items-center gap-2 text-slate-300 transition hover:text-white">
+              <Icon name="mail" class="h-4 w-4 text-aoc-300" />
+              {contact.email}
+            </a>
+          </li>
+          <li class="flex items-start gap-2">
+            <Icon name="map-pin" class="mt-0.5 h-4 w-4 shrink-0 text-aoc-300" />
+            <span class="text-slate-400">{contact.address.street}, {contact.address.city}, {contact.address.country}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-12 flex flex-col items-center justify-between gap-3 border-t border-white/10 pt-6 text-center text-xs text-slate-500 sm:flex-row sm:text-left">
+      <p>© {year} {site.name}. Tous droits réservés.</p>
+      <p class="inline-flex items-center gap-1.5 italic text-slate-400">
+        {site.tagline}
+        <Icon name="heart" class="h-3.5 w-3.5 text-aoc-400" />
+      </p>
+    </div>
+  </div>
+</footer>

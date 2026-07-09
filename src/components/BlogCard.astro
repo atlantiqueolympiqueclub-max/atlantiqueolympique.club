@@ -1,0 +1,47 @@
+---
+import SmartImage from './SmartImage.astro';
+import Icon from './Icon.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+const { post } = Astro.props;
+const fmt = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+---
+
+<article class="card-aoc group flex h-full flex-col overflow-clip">
+  <!-- Named transition: this cover morphs into the article header image -->
+  <div class="relative overflow-clip" transition:name={`cover-${post.id}`}>
+    <SmartImage
+      src={post.data.cover}
+      alt=""
+      class="aspect-[16/10] w-full transition-transform duration-700 group-hover:scale-[1.05]"
+      rounded="rounded-none"
+    />
+    <time
+      class="absolute left-3 top-3 rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-navy shadow-sm backdrop-blur"
+      datetime={post.data.date.toISOString()}
+    >
+      {fmt.format(post.data.date)}
+    </time>
+  </div>
+  <div class="flex flex-1 flex-col p-5">
+    {post.data.tags.length > 0 && (
+      <div class="mb-2 flex flex-wrap items-center gap-1.5">
+        {post.data.tags.slice(0, 2).map((t) => (
+          <span class="rounded-full bg-aoc-50 px-2.5 py-0.5 text-xs font-semibold text-aoc-700">{t}</span>
+        ))}
+      </div>
+    )}
+    <h3 class="text-lg font-bold leading-snug text-navy">
+      <a href={`/blog/${post.id}`} class="transition-colors after:absolute after:inset-0 group-hover:text-aoc-700">
+        {post.data.title}
+      </a>
+    </h3>
+    <p class="mt-2 line-clamp-2 text-sm text-slate-600">{post.data.excerpt}</p>
+    <span class="link-arrow mt-auto pt-4 text-sm">
+      Lire l'article <Icon name="arrow-right" class="h-4 w-4" />
+    </span>
+  </div>
+</article>

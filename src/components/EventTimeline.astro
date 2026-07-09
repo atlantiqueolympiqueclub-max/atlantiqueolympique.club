@@ -1,0 +1,495 @@
+---
+import SmartImage from './SmartImage.astro';
+import Icon from './Icon.astro';
+import type { CollectionEntry } from 'astro:content';
+
+/**
+ * Season timeline — the calendar as « La Plongée » (the dive).
+ *
+ * Events are grouped by month along one continuous vertical spine graded
+ * from the sunlit surface (azure) down into the deep Atlantic navy: the
+ * season read as a single descent. Upcoming events sit near the lit
+ * surface; past editions sink into the deep (muted + cooler). A soft
+ * caustic bead of light drifts down the spine — reduced-motion-safe.
+ *
+ * Sparse-data-friendly (no empty grid cells) and a flawless vertical
+ * stack on mobile, while keeping the rich event cards the theme leans on.
+ */
+interface Group {
+  label: string;
+  events: CollectionEntry<'events'>[];
+}
+interface Phase {
+  heading: string;
+  groups: Group[];
+  /** Count badge next to the heading (upcoming). */
+  count?: number;
+  /** Mute + cool the whole phase — the deep-water archive. */
+  past?: boolean;
+  /** Flag the very first event as the next rendez-vous. */
+  highlightNext?: boolean;
+}
+interface Props {
+  phases: Phase[];
+}
+const { phases } = Astro.props;
+
+const fmtDay = new Intl.DateTimeFormat('fr-FR', { day: '2-digit' });
+const fmtMonth = new Intl.DateTimeFormat('fr-FR', { month: 'short' });
+const fmtFull = new Intl.DateTimeFormat('fr-FR', {
+  day: '2-digit',
+  month: 'long',
+  year: 'numeric',
+});
+const shortMonth = (d: Date) => fmtMonth.format(d).replace('.', '');
+---
+
+<div class="timeline" data-reveal="fade">
+  <span class="timeline-spine" aria-hidden="true"></span>
+
+  {phases.map((phase) => (
+    <section class:list={['tl-phase', phase.past && 'is-past']}>
+      <div class="tl-phase-head">
+        <h2 class="tl-phase-title">{phase.heading}</h2>
+        {phase.count != null && phase.count > 0 && (
+          <span class="tl-count">{phase.count}</span>
+        )}
+      </div>
+
+      {phase.groups.map((group, gi) => (
+        <div class="tl-group">
+          <p class="tl-month">
+            <span class="tl-tick" aria-hidden="true"></span>
+            {group.label}
+          </p>
+
+          <ul class="tl-rows">
+            {group.events.map((e, ei) => {
+              const isNext = Boolean(phase.highlightNext && gi === 0 && ei === 0);
+              return (
+                <li class:list={['tl-row', isNext && 'is-next']} data-reveal>
+                  <div class="tl-rail">
+                    <time class="buoy" datetime={e.data.date.toISOString().slice(0, 10)}>
+                      <span class="buoy-d">{fmtDay.format(e.data.date)}</span>
+                      <span class="buoy-m">{shortMonth(e.data.date)}</span>
+                    </time>
+                  </div>
+
+                  <article class="tl-card card-aoc group">
+                    <div class="tl-thumb">
+                      <SmartImage
+                        src={e.data.image}
+                        alt={e.data.title}
+                        class:list={['tl-img', phase.past && 'opacity-80 saturate-[0.6]']}
+                        rounded="rounded-none"
+                      />
+                    </div>
+
+                    <div class="tl-body">
+                      {isNext && (
+                        <span class="tl-badge">
+                          <span class="tl-dot" aria-hidden="true"></span>
+                          Prochainement
+                        </span>
+                      )}
+                      <h3 class="tl-title">{e.data.title}</h3>
+                      {(e.data.location || e.data.time) && (
+                        <div class="tl-meta">
+                          {e.data.location && (
+                            <span class="tl-meta-item">
+                              <Icon name="map-pin" class="h-3.5 w-3.5 text-aoc-500" />
+                              {e.data.location}
+                            </span>
+                          )}
+                          {e.data.time && (
+                            <span class="tl-meta-item">
+                              <Icon name="clock" class="h-3.5 w-3.5 text-aoc-500" />
+                              {e.data.time}
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      {e.data.description && <p class="tl-desc">{e.data.description}</p>}
+
+                      <div class="tl-foot">
+                        {e.data.sourceUrl ? (
+                          <a
+                            href={e.data.sourceUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="link-arrow text-sm"
+                          >
+                            Lien de l'événement
+                            <Icon name="external-link" class="h-3.5 w-3.5" />
+                          </a>
+                        ) : (
+                          <span class="text-sm text-slate-400">Source à venir</span>
+                        )}
+                        <span class="tl-date">
+                          <Icon name="calendar" class="h-4 w-4 text-aoc-500" />
+                          {fmtFull.format(e.data.date)}
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      ))}
+    </section>
+  ))}
+</div>
+
+<style>
+  .timeline {
+    --rail: 3.25rem;
+    --gap: 0.9rem;
+    position: relative;
+    padding-block: 0.5rem;
+  }
+  @media (min-width: 640px) {
+    .timeline {
+      --rail: 4.5rem;
+      --gap: 1.1rem;
+    }
+  }
+
+  /* The descent: one continuous water column, lit surface → deep navy.
+     Alpha is baked into the stops so the travelling light bead (::after)
+     can read brighter than the line itself. */
+  .timeline-spine {
+    position: absolute;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    left: calc(var(--rail) / 2);
+    width: 3px;
+    transform: translateX(-1.5px);
+    border-radius: 3px;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-aoc-300) 60%, transparent) 0%,
+      color-mix(in srgb, var(--color-aoc-400) 58%, transparent) 22%,
+      color-mix(in srgb, var(--color-aoc-600) 62%, transparent) 55%,
+      color-mix(in srgb, var(--color-aoc-800) 64%, transparent) 80%,
+      color-mix(in srgb, var(--color-navy) 62%, transparent) 100%
+    );
+  }
+  /* A soft caustic bead of light sinking down the lane line */
+  @media (prefers-reduced-motion: no-preference) {
+    .timeline-spine::after {
+      content: '';
+      position: absolute;
+      left: -1px;
+      right: -1px;
+      top: 0;
+      height: 20%;
+      border-radius: inherit;
+      background: linear-gradient(
+        180deg,
+        transparent,
+        color-mix(in srgb, var(--color-aoc-200) 92%, white),
+        transparent
+      );
+      filter: blur(1px);
+      animation: spine-bead 7s ease-in-out infinite;
+    }
+  }
+  @keyframes spine-bead {
+    0% {
+      top: -20%;
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.9;
+    }
+    88% {
+      opacity: 0.9;
+    }
+    100% {
+      top: 100%;
+      opacity: 0;
+    }
+  }
+
+  .tl-phase + .tl-phase {
+    margin-top: 2.75rem;
+  }
+  .tl-phase-head {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding-left: calc(var(--rail) + var(--gap));
+    margin-bottom: 0.6rem;
+  }
+  .tl-phase-title {
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-slate-400);
+  }
+  .tl-count {
+    border-radius: 999px;
+    border: 1px solid var(--color-aoc-100);
+    background: var(--color-aoc-50);
+    padding: 0.05rem 0.5rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--color-aoc-700);
+  }
+
+  .tl-month {
+    position: relative;
+    padding-left: calc(var(--rail) + var(--gap));
+    margin: 1.15rem 0 0.7rem;
+    font-family: var(--font-display);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-aoc-700);
+  }
+  /* Diamond marker riding the spine at each new month */
+  .tl-tick {
+    position: absolute;
+    top: 50%;
+    left: calc(var(--rail) / 2);
+    width: 0.5rem;
+    height: 0.5rem;
+    transform: translate(-50%, -50%) rotate(45deg);
+    border-radius: 1px;
+    background: var(--color-aoc-400);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-aoc-400) 20%, transparent);
+  }
+
+  .tl-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .tl-row {
+    display: grid;
+    grid-template-columns: var(--rail) 1fr;
+    gap: var(--gap);
+    align-items: start;
+  }
+  .tl-rail {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.15rem;
+  }
+
+  /* Date buoy — a bead threaded onto the spine */
+  .buoy {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 2.9rem;
+    padding: 0.32rem 0.35rem;
+    border-radius: 0.85rem;
+    background: #fff;
+    border: 1px solid var(--color-aoc-100);
+    box-shadow: 0 8px 20px -10px rgb(27 162 214 / 0.5);
+    text-align: center;
+  }
+  @media (min-width: 640px) {
+    .buoy {
+      min-width: 3.25rem;
+    }
+  }
+  .buoy::before {
+    content: '';
+    position: absolute;
+    inset: -0.4rem;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--color-aoc-300) 55%, transparent),
+      transparent
+    );
+  }
+  .buoy-d {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--color-navy);
+  }
+  .buoy-m {
+    margin-top: 0.12rem;
+    font-size: 0.56rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-aoc-600);
+  }
+
+  /* Event card */
+  .tl-card {
+    display: grid;
+    gap: 0.85rem;
+    padding: 0.7rem;
+    overflow: clip;
+  }
+  @media (min-width: 480px) {
+    .tl-card {
+      grid-template-columns: 8.5rem 1fr;
+      gap: 1rem;
+    }
+  }
+  .tl-thumb {
+    position: relative;
+    overflow: clip;
+    border-radius: 0.7rem;
+  }
+  .tl-img {
+    aspect-ratio: 16 / 10;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.7s ease;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tl-card:hover .tl-img {
+      transform: scale(1.05);
+    }
+  }
+  .tl-body {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .tl-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--color-navy);
+    transition: color 0.3s ease;
+  }
+  .tl-card:hover .tl-title {
+    color: var(--color-aoc-700);
+  }
+  .tl-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2rem 0.9rem;
+    margin-top: 0.4rem;
+  }
+  .tl-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.34rem;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: var(--color-slate-500);
+  }
+  .is-past .tl-meta-item {
+    color: var(--color-slate-400);
+  }
+  .tl-desc {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--color-slate-600);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .tl-foot {
+    margin-top: auto;
+    padding-top: 0.8rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+  }
+  .tl-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 500;
+    color: var(--color-slate-500);
+  }
+
+  /* Next rendez-vous — a lit highlight at the surface */
+  .tl-badge {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.45rem;
+    padding: 0.18rem 0.6rem;
+    border-radius: 999px;
+    background: var(--color-aoc-50);
+    border: 1px solid var(--color-aoc-100);
+    font-size: 0.64rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--color-aoc-700);
+  }
+  .tl-dot {
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 999px;
+    background: var(--color-aoc-500);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .tl-dot {
+      animation: pulse-dot 2.2s ease-in-out infinite;
+    }
+  }
+  @keyframes pulse-dot {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-aoc-400) 60%, transparent);
+    }
+    70% {
+      box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-aoc-400) 0%, transparent);
+    }
+  }
+  .is-next .tl-card {
+    border-color: color-mix(in srgb, var(--color-aoc-300) 80%, white);
+    box-shadow: 0 20px 44px -22px rgb(27 162 214 / 0.55);
+  }
+  .is-next .buoy {
+    border-color: var(--color-aoc-300);
+    box-shadow: 0 10px 26px -8px rgb(27 162 214 / 0.7);
+  }
+
+  /* Past editions — sunk into the deep: muted, cooler, quieter */
+  .is-past .buoy {
+    background: color-mix(in srgb, #fff 92%, var(--color-slate-200));
+    border-color: var(--color-slate-200);
+    box-shadow: 0 6px 16px -10px rgb(11 42 74 / 0.35);
+  }
+  .is-past .buoy::before {
+    display: none;
+  }
+  .is-past .buoy-d {
+    color: color-mix(in srgb, var(--color-navy) 68%, var(--color-slate-400));
+  }
+  .is-past .buoy-m {
+    color: var(--color-slate-400);
+  }
+  .is-past .tl-month {
+    color: var(--color-slate-400);
+  }
+  .is-past .tl-tick {
+    background: var(--color-slate-300);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-slate-300) 28%, transparent);
+  }
+  .is-past .tl-title {
+    color: color-mix(in srgb, var(--color-navy) 80%, var(--color-slate-400));
+  }
+</style>

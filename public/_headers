@@ -1,0 +1,19 @@
+# En-têtes de sécurité — Cloudflare Pages.
+# Reproduit les protections qui étaient servies par Caddy en auto-hébergement.
+# Docs : https://developers.cloudflare.com/pages/configuration/headers/
+
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Content-Security-Policy: default-src 'self'; img-src 'self' data: https://*.tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'
+
+# La page d'administration (Sveltia CMS) doit contacter GitHub, le CDN unpkg et
+# le worker d'authentification. On retire la CSP stricte uniquement pour /admin
+# (tous les autres en-têtes de sécurité restent appliqués).
+/admin
+  ! Content-Security-Policy
+/admin/*
+  ! Content-Security-Policy

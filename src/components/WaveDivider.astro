@@ -1,0 +1,60 @@
+---
+/**
+ * Seamless sine-wave divider between two stacked sections.
+ *   `from`    — Tailwind bg-* class of the section above (paints the "sky").
+ *   `to`      — Tailwind fill-* class of the section below (paints the wave).
+ *   `flip`    — mirrors the crest horizontally so consecutive waves vary.
+ *   `animate` — living variant: two foam layers drift past each other
+ *               (CSS-only, still under prefers-reduced-motion).
+ * Decorative only; hidden from assistive tech.
+ */
+interface Props {
+  from?: string;
+  to?: string;
+  flip?: boolean;
+  animate?: boolean;
+  class?: string;
+}
+const {
+  from = 'bg-white',
+  to = 'fill-white',
+  flip = false,
+  animate = false,
+  class: className = '',
+} = Astro.props;
+
+// Static crest spans one viewport; the drifting one is 200% wide so a
+// translateX(-50%) loops seamlessly.
+const STATIC_WAVE = 'M0,48 Q180,88 360,48 T720,48 T1080,48 T1440,48 V96 H0 Z';
+const DRIFT_WAVE =
+  'M0,60 Q180,100 360,60 T720,60 T1080,60 T1440,60 T1800,60 T2160,60 T2520,60 T2880,60 V120 H0 Z';
+---
+
+{
+  animate ? (
+    <div class:list={['overflow-clip leading-none', from, className]} aria-hidden="true">
+      <div class:list={['relative h-10 sm:h-14', flip && '-scale-x-100']}>
+        <div class="wave-layer h-[88%] opacity-30" style="--wt:31s; --wdl:-8s" data-reverse>
+          <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class={to}>
+            <path d={DRIFT_WAVE} />
+          </svg>
+        </div>
+        <div class="wave-layer h-[72%]" style="--wt:18s">
+          <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class={to}>
+            <path d={DRIFT_WAVE} />
+          </svg>
+        </div>
+      </div>
+    </div>
+  ) : (
+    <div class:list={['leading-none', from, className]} aria-hidden="true">
+      <svg
+        class:list={['block h-10 w-full sm:h-14', to, flip && '-scale-x-100']}
+        viewBox="0 0 1440 96"
+        preserveAspectRatio="none"
+      >
+        <path d={STATIC_WAVE} />
+      </svg>
+    </div>
+  )
+}

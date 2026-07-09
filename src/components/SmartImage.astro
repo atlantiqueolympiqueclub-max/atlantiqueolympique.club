@@ -1,0 +1,35 @@
+---
+import Placeholder from './Placeholder.astro';
+/**
+ * Renders an <img> when `src` is set, otherwise a grey placeholder block.
+ * `src` is a path under /public (e.g. "/images/blog/foo.svg").
+ */
+interface Props {
+  src?: string;
+  alt?: string;
+  class?: string;
+  rounded?: string;
+  loading?: 'lazy' | 'eager';
+}
+const {
+  src,
+  alt = '',
+  class: className = 'aspect-video w-full',
+  rounded = 'rounded-lg',
+  loading = 'lazy',
+} = Astro.props;
+---
+
+{
+  src ? (
+    <img
+      src={src}
+      alt={alt}
+      loading={loading}
+      decoding="async"
+      class:list={['object-cover', rounded, className]}
+    />
+  ) : (
+    <Placeholder class={className} rounded={rounded} />
+  )
+}

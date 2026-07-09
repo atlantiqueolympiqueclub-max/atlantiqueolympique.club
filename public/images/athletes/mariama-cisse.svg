@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="320" viewBox="0 0 320 320" role="img" aria-label="MC">
+  <defs>
+    <linearGradient id="a84809" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5ec8ee"/><stop offset="1" stop-color="#1282b4"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" fill="url(#a84809)"/>
+  <circle cx="160" cy="128" r="58" fill="#ffffff" opacity="0.92"/>
+  <path d="M70 300 C70 220 120 196 160 196 C200 196 250 220 250 300 Z" fill="#ffffff" opacity="0.92"/>
+  <text x="160" y="270" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-size="62" font-weight="800" fill="#1282b4">MC</text>
+  <path d="M0 250 C 48 240, 112 260, 160 250 S 272 240, 320 250" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.2"/><path d="M0 264 C 48 254, 112 274, 160 264 S 272 254, 320 264" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.2"/><path d="M0 278 C 48 268, 112 288, 160 278 S 272 268, 320 278" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.2"/>
+</svg>

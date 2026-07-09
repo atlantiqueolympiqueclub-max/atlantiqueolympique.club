@@ -1,0 +1,35 @@
+# AOC website — Caddy config (PLAN.md §7).
+# Caddy auto-provisions and renews TLS, so HTTPS needs no manual work.
+# Replace the domain below with your real one before launch (PLAN.md §10.4).
+
+aoc.example.sn {
+	root * /var/www/aoc/dist
+	encode gzip zstd
+
+	# Security headers (PLAN.md §8). The CSP allows OpenStreetMap raster tiles
+	# (loaded by the Leaflet map as images) and self-hosted scripts only.
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		Content-Security-Policy "default-src 'self'; img-src 'self' data: https://*.tile.openstreetmap.org; style-src 'self' 'unsafe-inline'; script-src 'self'; connect-src 'self'; font-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'"
+		-Server
+	}
+
+	# Fully static — every route is a file. Clean URLs + SPA-less fallbacks.
+	handle {
+		try_files {path} {path}/ {path}.html =404
+		file_server
+	}
+
+	# Custom 404 page from the Astro build.
+	handle_errors {
+		@404 expression {http.error.status_code} == 404
+		handle @404 {
+			rewrite * /404.html
+			file_server
+		}
+	}
+}

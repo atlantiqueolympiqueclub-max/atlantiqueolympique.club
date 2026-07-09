@@ -1,0 +1,37 @@
+{
+  "name": "Atlantique Olympique Club",
+  "shortName": "AOC",
+  "tagline": "Réussite par l'effort dans la discipline.",
+  "description": "Club professionnel de natation basé à Dakar, affilié à la Fédération Sénégalaise de Natation et de Sauvetage.",
+  "copyrightYear": 2025,
+  "nav": [
+    { "label": "À propos", "href": "/#a-propos" },
+    { "label": "Le club", "href": "/#le-club" },
+    { "label": "Actualités", "href": "/#actualites" },
+    { "label": "Calendrier", "href": "/evenements" },
+    { "label": "Galerie", "href": "/galerie" },
+    { "label": "Contact", "href": "/#contact" }
+  ],
+  "stats": [
+    { "value": 150, "suffix": "+", "label": "Licenciés" },
+    { "value": 40, "suffix": "+", "label": "Podiums nationaux" },
+    { "value": 7, "suffix": "", "label": "Disciplines" },
+    { "value": 12, "suffix": "", "label": "Années de passion" }
+  ],
+  "social": [
+    {
+      "label": "Instagram",
+      "href": "https://www.instagram.com/atlantiqueolympiqueclub/",
+      "icon": "instagram",
+      "handle": "@atlantiqueolympiqueclub",
+      "blurb": "Photos & stories"
+    },
+    {
+      "label": "TikTok",
+      "href": "https://www.tiktok.com/@atlantiqueolympiqueclub",
+      "icon": "tiktok",
+      "handle": "@atlantiqueolympiqueclub",
+      "blurb": "Vidéos & coulisses"
+    }
+  ]
+}

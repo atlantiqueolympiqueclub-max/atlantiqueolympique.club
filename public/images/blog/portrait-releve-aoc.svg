@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500" role="img" aria-label="RELÈVE">
+  <defs>
+    <linearGradient id="g86242" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5ec8ee"/><stop offset="1" stop-color="#1282b4"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="500" fill="url(#g86242)"/>
+  <path d="M0 310 C 120 300, 280 320, 400 310 S 680 300, 800 310" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.16"/><path d="M0 324 C 120 314, 280 334, 400 324 S 680 314, 800 324" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.16"/><path d="M0 338 C 120 328, 280 348, 400 338 S 680 328, 800 338" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.16"/>
+  
+  <text x="400" y="200" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-size="35" font-weight="700" fill="#ffffff" opacity="0.85" letter-spacing="2">CLUB</text>
+  <text x="400" y="280" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-size="65" font-weight="800" fill="#ffffff">RELÈVE</text>
+  
+</svg>

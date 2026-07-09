@@ -1,0 +1,16 @@
+{
+  "phone": "+221 33 800 00 00",
+  "phoneSecondary": "+221 77 000 00 00",
+  "email": "contact@aoc.sn",
+  "address": {
+    "street": "Club Olympique",
+    "city": "Dakar",
+    "country": "Sénégal"
+  },
+  "map": {
+    "lat": 14.7167,
+    "lng": -17.4677,
+    "zoom": 13,
+    "label": "Atlantique Olympique Club — Dakar"
+  }
+}

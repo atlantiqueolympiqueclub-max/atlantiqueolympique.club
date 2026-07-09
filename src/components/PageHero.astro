@@ -1,0 +1,62 @@
+---
+import DeepWater from './DeepWater.astro';
+
+/**
+ * Title banner for sub-pages (membership form, events, gallery…).
+ * A compact echo of the homepage dive: the same graded depth gradient,
+ * caustic light and godrays and masked word-rise headline, over drifting
+ * foam waves. Progressive & reduced-motion-safe.
+ */
+interface Props {
+  title: string;
+  eyebrow?: string;
+}
+const { title, eyebrow } = Astro.props;
+
+const words = title.split(/\s+/);
+
+const WAVE =
+  'M0,60 Q180,100 360,60 T720,60 T1080,60 T1440,60 T1800,60 T2160,60 T2520,60 T2880,60 V120 H0 Z';
+---
+
+<section class="grain relative isolate overflow-clip bg-navy text-white">
+  <div class="hero-water absolute inset-0 -z-20" aria-hidden="true"></div>
+  <DeepWater class="-z-10" intensity={0.85} rays surface color="#e7fcff" />
+  <!-- Keep the title crisp over the caustic light -->
+  <div
+    class="absolute inset-0 -z-[5] [background:linear-gradient(90deg,rgb(5_22_42/0.62),rgb(5_22_42/0.15)_46%,transparent_66%)]"
+    aria-hidden="true"
+  >
+  </div>
+
+  <div class="container-aoc relative flex min-h-[13rem] flex-col justify-center pb-16 pt-12 sm:min-h-[16rem] sm:pb-20 sm:pt-14">
+    {eyebrow && (
+      <p class="anim-load font-display text-xs font-bold uppercase tracking-[0.22em] text-aoc-200">
+        {eyebrow}
+      </p>
+    )}
+    <h1
+      class:list={[
+        'font-display font-extrabold tracking-tight',
+        eyebrow
+          ? 'mt-3 text-[clamp(1.9rem,1.4rem+2.3vw,2.7rem)]'
+          : 'text-[clamp(1.9rem,1.3rem+3vw,3.2rem)]',
+      ]}
+    >
+      {words.map((w, i) => (
+        <>
+          <span class="hero-mask"><span class="hero-word" style={`--i:${i}`}>{w}</span></span>{' '}
+        </>
+      ))}
+    </h1>
+  </div>
+
+  <div class="relative h-10 sm:h-14" aria-hidden="true">
+    <div class="wave-layer h-9 opacity-40 sm:h-[52px]" style="--wt:28s; --wdl:-9s" data-reverse>
+      <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class="fill-white"><path d={WAVE}></path></svg>
+    </div>
+    <div class="wave-layer h-6 sm:h-9" style="--wt:17s">
+      <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class="fill-white"><path d={WAVE}></path></svg>
+    </div>
+  </div>
+</section>

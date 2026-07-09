@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageHero from '../../components/PageHero.astro';
+import BlogCard from '../../components/BlogCard.astro';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+---
+
+<BaseLayout
+  title="Blog"
+  description="Actualités, conseils et résultats de l'Atlantique Olympique Club."
+>
+  <PageHero eyebrow="Actualités" title="Blog" />
+
+  <section class="container-aoc py-14 sm:py-20">
+    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      {posts.map((post, i) => (
+        <div data-reveal style={`--dr:${i % 3}`} class="h-full">
+          <BlogCard post={post} />
+        </div>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

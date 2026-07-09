@@ -1,0 +1,73 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SmartImage from '../../components/SmartImage.astro';
+import Icon from '../../components/Icon.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const fmt = new Intl.DateTimeFormat('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+// ~200 words/min, floor of 1 — a small but honest reading cue.
+const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 200));
+---
+
+<BaseLayout title={post.data.title} description={post.data.excerpt}>
+  <article>
+    <!-- cover (receives the card's morphing image via the shared name) -->
+    <div
+      class="relative isolate flex min-h-[18rem] items-end overflow-clip bg-navy text-white sm:min-h-[24rem]"
+      transition:name={`cover-${post.id}`}
+    >
+      <SmartImage
+        src={post.data.cover}
+        alt={post.data.title}
+        class="absolute inset-0 -z-10 h-full w-full"
+        rounded="rounded-none"
+        loading="eager"
+      />
+      <div class="absolute inset-0 -z-10 bg-gradient-to-t from-navy/90 via-navy/40 to-navy/10"></div>
+
+      <div class="container-aoc py-9 sm:py-10">
+        <a href="/blog" class="anim-load inline-flex items-center gap-1.5 text-sm font-semibold text-white/80 transition hover:text-white">
+          <Icon name="arrow-left" class="h-4 w-4" /> Blog
+        </a>
+        <div class="anim-load mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/85" style="--d:120">
+          <time datetime={post.data.date.toISOString()}>{fmt.format(post.data.date)}</time>
+          <span class="inline-flex items-center gap-1.5">
+            <Icon name="clock" class="h-4 w-4 text-aoc-300" />
+            {minutes} min de lecture
+          </span>
+          {post.data.tags.map((t) => (
+            <span class="rounded-full border border-white/20 bg-white/15 px-2.5 py-0.5 text-xs font-semibold backdrop-blur-sm">{t}</span>
+          ))}
+        </div>
+        <h1 class="anim-load mt-3 max-w-3xl font-display text-[clamp(1.9rem,1.4rem+2.3vw,2.7rem)] font-extrabold leading-tight" style="--d:220">
+          {post.data.title}
+        </h1>
+      </div>
+    </div>
+
+    <!-- body -->
+    <div class="container-aoc py-12 sm:py-16">
+      <div class="prose-aoc mx-auto max-w-3xl">
+        <Content />
+      </div>
+
+      <div class="mx-auto mt-14 flex max-w-3xl items-center justify-between border-t border-slate-100 pt-6">
+        <a href="/blog" class="link-arrow">
+          <Icon name="arrow-left" class="h-4 w-4" /> Retour au blog
+        </a>
+        <a href="#top" class="text-sm font-medium text-slate-400 transition hover:text-aoc-600">
+          Haut de page ↑
+        </a>
+      </div>
+    </div>
+  </article>
+</BaseLayout>

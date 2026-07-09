@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600" role="img" aria-label="Image AOC">
+  <defs>
+    <linearGradient id="g557" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#76d0f2"/><stop offset="1" stop-color="#1282b4"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#g557)"/>
+  <path d="M0 372 C 90 362, 210 382, 300 372 S 510 362, 600 372" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.16"/><path d="M0 386 C 90 376, 210 396, 300 386 S 510 376, 600 386" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.16"/><path d="M0 400 C 90 390, 210 410, 300 400 S 510 390, 600 400" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.16"/>
+  
+  <g transform="translate(216, 216)" opacity="0.85" fill="none" stroke="#ffffff" stroke-width="8.400000000000002" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="0" y="13.440000000000003" width="168.00000000000003" height="141.12" rx="13.440000000000003"/>
+    <circle cx="50.400000000000006" cy="63.84000000000001" r="15.120000000000003"/>
+    <path d="M13.440000000000003 137.76000000000002 L67.20000000000002 84.00000000000001 L104.16000000000001 117.60000000000001 L131.04000000000002 92.40000000000002 L168.00000000000003 131.04000000000002"/>
+  </g>
+  
+  
+  
+</svg>

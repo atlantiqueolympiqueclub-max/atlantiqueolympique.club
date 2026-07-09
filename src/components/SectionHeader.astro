@@ -1,0 +1,58 @@
+---
+/**
+ * Airy section header: azure eyebrow, large navy heading, optional
+ * description, and a small wave squiggle that draws itself in as the
+ * section scrolls into view (CSS scroll-driven, reduced-motion-safe).
+ *
+ * Variants:
+ *   align="left"  (default) — header + optional text left-aligned in the grid
+ *   align="center"          — eyebrow/heading/description centered (stacked)
+ */
+interface Props {
+  eyebrow?: string;
+  title: string;
+  description?: string;
+  id?: string;
+  align?: 'left' | 'center';
+  class?: string;
+}
+const {
+  eyebrow,
+  title,
+  description,
+  id,
+  align = 'left',
+  class: className = '',
+} = Astro.props;
+const centered = align === 'center';
+---
+
+<div
+  id={id}
+  class:list={['scroll-mt-24', centered ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl', className]}
+  data-reveal
+>
+  {eyebrow && (
+    <p class:list={['font-display text-xs font-bold uppercase tracking-[0.16em] text-aoc-600/80', centered ? '' : 'mb-2']}>
+      {eyebrow}
+    </p>
+  )}
+  <h2 class="font-display text-[clamp(1.5rem,1.1rem+1.9vw,2.3rem)] font-extrabold tracking-tight text-navy">
+    {title}
+  </h2>
+  {description && (
+    <p class:list={['mt-3 max-w-xl text-slate-500', centered ? 'mx-auto' : '']}>{description}</p>
+  )}
+  <svg
+    class:list={['squiggle mt-5 h-3 w-[5.5rem] text-aoc-400', centered ? 'mx-auto' : '']}
+    viewBox="0 0 88 12"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M2 6 Q 12.5 1.5, 23 6 T 44 6 T 65 6 T 86 6"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"></path>
+  </svg>
+</div>

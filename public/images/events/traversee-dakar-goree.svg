@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="480" viewBox="0 0 640 480" role="img" aria-label="DAKAR–GORÉE">
+  <defs>
+    <linearGradient id="g66494" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#76d0f2"/><stop offset="1" stop-color="#1282b4"/>
+    </linearGradient>
+  </defs>
+  <rect width="640" height="480" fill="url(#g66494)"/>
+  <path d="M0 297.6 C 96 287.6, 224 307.6, 320 297.6 S 544 287.6, 640 297.6" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.16"/><path d="M0 311.6 C 96 301.6, 224 321.6, 320 311.6 S 544 301.6, 640 311.6" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.16"/><path d="M0 325.6 C 96 315.6, 224 335.6, 320 325.6 S 544 315.6, 640 325.6" fill="none" stroke="#ffffff" stroke-width="3" opacity="0.16"/>
+  
+  
+  <text x="320" y="240" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-size="62.400000000000006" font-weight="800" fill="#ffffff">DAKAR–GORÉE</text>
+  
+</svg>

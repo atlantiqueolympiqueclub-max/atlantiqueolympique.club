@@ -1,0 +1,105 @@
+---
+// Self-hosted fonts (privacy-friendly — no Google CDN).
+import '@fontsource-variable/inter'; // body, full weight range
+import '@fontsource/poppins/700.css'; // display
+import '@fontsource/poppins/800.css';
+import '@fontsource/poppins/900.css'; // hero headline
+import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
+import site from '../data/site.json';
+import contact from '../data/contact.json';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import WaveDivider from '../components/WaveDivider.astro';
+import Icon from '../components/Icon.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  /** bg-* class of the last section, so the footer wave blends into it.
+   *  Pass `false` to skip the wave (e.g. when a CTA band precedes the footer). */
+  footerWave?: string | false;
+}
+const { title, description = site.description, footerWave = 'bg-white' } = Astro.props;
+const pageTitle = title ? `${title} — ${site.shortName}` : `${site.name} — ${site.tagline}`;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+
+// Structured data: helps search engines present the club properly.
+const jsonLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'SportsClub',
+  name: site.name,
+  alternateName: site.shortName,
+  slogan: site.tagline,
+  description: site.description,
+  sport: 'Natation',
+  telephone: contact.phone,
+  email: contact.email,
+  url: new URL('/', Astro.site ?? Astro.url).href,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: contact.address.street,
+    addressLocality: contact.address.city,
+    addressCountry: 'SN',
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: contact.map.lat,
+    longitude: contact.map.lng,
+  },
+  sameAs: site.social.map((s) => s.href),
+});
+---
+
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href={canonical} />
+    <!-- Smooth page-by-page transitions instead of hard reloads. -->
+    <ClientRouter />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="fr_FR" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="theme-color" content="#0b2a4a" />
+
+    <!-- Structured data (inert JSON — allowed under the strict CSP) -->
+    <script type="application/ld+json" is:inline set:html={jsonLd} />
+  </head>
+  <body class="flex min-h-screen flex-col bg-white">
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    {footerWave !== false && <WaveDivider from={footerWave} to="fill-navy" animate />}
+    <Footer />
+
+    <!-- Floating "back to top" — appears via a scroll-driven animation -->
+    <a
+      href="#top"
+      class="to-top inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-aoc-600 shadow-lg shadow-navy/10 backdrop-blur transition-colors hover:bg-aoc-500 hover:text-white"
+      aria-label="Retour en haut de page"
+    >
+      <Icon name="arrow-up" class="h-5 w-5" />
+    </a>
+
+    <!-- « La Plongée » motion layer: caustic light, godrays, cursor-light and
+         magnetic buttons. Static 'self' file (CSP-safe); no-op under reduced
+         motion. -->
+    <script is:inline src="/js/deep-fx.js" defer></script>
+  </body>
+</html>

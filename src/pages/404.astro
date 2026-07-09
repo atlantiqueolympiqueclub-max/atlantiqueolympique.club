@@ -1,0 +1,91 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Icon from '../components/Icon.astro';
+import DeepWater from '../components/DeepWater.astro';
+
+const WAVE =
+  'M0,60 Q180,100 360,60 T720,60 T1080,60 T1440,60 T1800,60 T2160,60 T2520,60 T2880,60 V120 H0 Z';
+---
+
+<BaseLayout title="Page introuvable" footerWave={false}>
+  <!-- Open water at dusk: the lost page drifts somewhere out here -->
+  <section class="grain relative isolate flex min-h-[calc(100svh-8rem)] flex-col overflow-clip bg-navy text-white">
+    <div
+      class="absolute inset-0 -z-30 bg-[linear-gradient(165deg,#081f38_0%,#0b2a4a_38%,#146891_78%,#1ba2d6_115%)]"
+      aria-hidden="true"
+    >
+    </div>
+    <div class="blob -z-20 left-[-5rem] top-[20%] h-80 w-80 bg-aoc-400/20 mix-blend-screen" aria-hidden="true"></div>
+    <div class="blob -z-20 bottom-[-6rem] right-[8%] h-96 w-96 bg-aoc-300/15 mix-blend-screen" data-late aria-hidden="true"></div>
+    <DeepWater class="-z-10" intensity={0.85} rays surface depthReact color="#e7fcff" />
+    <!-- Keep the centered copy crisp over the brightest light -->
+    <div
+      class="absolute inset-0 -z-[5] [background:radial-gradient(40rem_26rem_at_50%_45%,rgb(5_20_38/0.55),transparent_70%)]"
+      aria-hidden="true"
+    >
+    </div>
+
+    <div class="container-aoc flex flex-1 flex-col items-center justify-center py-20 text-center sm:py-24">
+      <div class="relative">
+        <p class="anim-load font-display text-[clamp(6rem,4rem+10vw,9.5rem)] font-black leading-none tracking-tight text-outline-light">
+          404
+        </p>
+        <!-- Lifebuoy bobbing beside the number -->
+        <span class="animate-float absolute -right-9 -top-5 sm:-right-14 sm:-top-7" aria-hidden="true">
+          <svg viewBox="0 0 56 56" class="h-14 w-14 drop-shadow-[0_10px_18px_rgba(8,31,56,0.5)] sm:h-[4.5rem] sm:w-[4.5rem]">
+            <circle cx="28" cy="28" r="19" fill="none" stroke="#fff" stroke-width="11"></circle>
+            <circle
+              cx="28"
+              cy="28"
+              r="19"
+              fill="none"
+              stroke="var(--color-aoc-400)"
+              stroke-width="11"
+              stroke-dasharray="14.9 14.9"
+              stroke-dashoffset="7.5"
+            ></circle>
+            <circle cx="28" cy="28" r="19" fill="none" stroke="rgb(8 31 56 / 0.25)" stroke-width="1"></circle>
+            <circle cx="28" cy="28" r="13.5" fill="none" stroke="rgb(8 31 56 / 0.25)" stroke-width="1"></circle>
+          </svg>
+        </span>
+      </div>
+
+      <svg class="squiggle anim-load mt-4 h-3 w-24 text-aoc-300" style="--d:100" viewBox="0 0 88 12" fill="none" aria-hidden="true">
+        <path d="M2 6 Q 12.5 1.5, 23 6 T 44 6 T 65 6 T 86 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"></path>
+      </svg>
+
+      <h1 class="anim-load mt-7 font-display text-2xl font-bold sm:text-3xl" style="--d:180">
+        Vous avez nagé hors du bassin
+      </h1>
+      <p class="anim-load mt-3 max-w-md text-aoc-50/80" style="--d:300">
+        La page que vous cherchez n'existe pas ou a été déplacée. Reprenez votre souffle et
+        revenez vers le grand bain.
+      </p>
+      <div class="anim-load mt-9 flex flex-wrap items-center justify-center gap-3" style="--d:420">
+        <a
+          href="/"
+          data-magnet
+          class="btn-shine inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold uppercase tracking-wide text-navy shadow-xl shadow-navy/40 transition-colors hover:bg-aoc-50"
+        >
+          <Icon name="arrow-left" class="h-4 w-4" /> Retour à l'accueil
+        </a>
+        <a
+          href="/evenements"
+          class="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:border-white/60 hover:bg-white/15"
+        >
+          Voir les événements
+        </a>
+      </div>
+    </div>
+
+    <!-- The deep rises to meet the footer's dark water -->
+    <div class="relative h-12 sm:h-16" aria-hidden="true">
+      <div class="wave-layer h-[90%] opacity-40" style="--wt:30s; --wdl:-9s" data-reverse>
+        <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class="fill-navy"><path d={WAVE}></path></svg>
+      </div>
+      <div class="wave-layer h-[65%]" style="--wt:18s">
+        <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class="fill-navy"><path d={WAVE}></path></svg>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

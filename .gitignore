@@ -1,0 +1,16 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# form-handler runtime data & secrets
+form-handler/.env
+form-handler/data/
+*.log
+
+# os / editor
+.DS_Store
+.vscode/
+*.local

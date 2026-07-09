@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="160" viewBox="0 0 240 160" role="img" aria-label="CNOSS">
+  <rect width="240" height="160" rx="12" fill="#ffffff" stroke="#e6e8eb"/>
+  <circle cx="120" cy="62" r="40" fill="#1282b4"/>
+  <path d="M84 62 c10 0 10 -8 18 -8 s8 8 18 8 8 -8 18 -8 8 8 16 8" fill="none" stroke="#ffffff" stroke-width="5" stroke-linecap="round"/>
+  <path d="M84 76 c10 0 10 -8 18 -8 s8 8 18 8 8 -8 18 -8 8 8 16 8" fill="none" stroke="#e0a400" stroke-width="5" stroke-linecap="round" opacity="0.8"/>
+  <text x="120" y="132" text-anchor="middle" font-family="Poppins, system-ui, sans-serif" font-size="26" font-weight="800" fill="#0b2a4a">CNOSS</text>
+</svg>

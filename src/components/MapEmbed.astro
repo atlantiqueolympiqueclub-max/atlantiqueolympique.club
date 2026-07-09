@@ -1,0 +1,82 @@
+---
+import contact from '../data/contact.json';
+/**
+ * Privacy-friendly map (PLAN.md §5): self-hosted Leaflet + OpenStreetMap tiles.
+ * No Google Maps, no third-party scripts. Tiles are loaded as images, which the
+ * Caddy CSP explicitly allows (img-src …*.tile.openstreetmap.org). Degrades to a
+ * plain OSM link when JS is off.
+ */
+const { lat, lng, zoom, label } = contact.map;
+const osmLink = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lng}#map=${zoom}/${lat}/${lng}`;
+---
+
+<div class="relative h-72 w-full overflow-clip rounded-2xl border border-slate-200 shadow-sm sm:h-80" data-reveal="fade">
+  <div
+    id="aoc-map"
+    class="ph-block h-full w-full"
+    data-lat={lat}
+    data-lng={lng}
+    data-zoom={zoom}
+    data-label={label}
+  >
+  </div>
+  <noscript>
+    <div class="absolute inset-0 flex items-center justify-center bg-aoc-50">
+      <a href={osmLink} target="_blank" rel="noopener noreferrer"
+        class="rounded-full bg-aoc-400 px-5 py-2.5 text-sm font-bold text-white shadow">
+        Voir la carte sur OpenStreetMap
+      </a>
+    </div>
+  </noscript>
+</div>
+
+<script>
+  // Leaflet (~150 kB) is loaded lazily — only when the map nears the viewport —
+  // so the rest of the page stays JS-free per PLAN.md's "zero JS by default".
+  const el = document.getElementById('aoc-map');
+
+  async function initMap(target: HTMLElement) {
+    const { default: L } = await import('leaflet');
+    await import('leaflet/dist/leaflet.css');
+
+    const lat = parseFloat(target.dataset.lat ?? '0');
+    const lng = parseFloat(target.dataset.lng ?? '0');
+    const zoom = parseInt(target.dataset.zoom ?? '13', 10);
+    const label = target.dataset.label ?? '';
+
+    const map = L.map(target, { scrollWheelZoom: false }).setView([lat, lng], zoom);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap',
+    }).addTo(map);
+
+    // Inline SVG pin → no external marker-image requests.
+    const icon = L.divIcon({
+      className: '',
+      html: '<svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 24 24" fill="#3cbbe8" stroke="#0b2a4a" stroke-width="1"><path d="M12 22s-7-5.5-7-11a7 7 0 1 1 14 0c0 5.5-7 11-7 11Z"/><circle cx="12" cy="11" r="2.6" fill="#fff"/></svg>',
+      iconSize: [34, 34],
+      iconAnchor: [17, 34],
+      popupAnchor: [0, -30],
+    });
+
+    L.marker([lat, lng], { icon }).addTo(map).bindPopup(label);
+  }
+
+  if (el) {
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(
+        (entries, obs) => {
+          if (entries.some((e) => e.isIntersecting)) {
+            obs.disconnect();
+            initMap(el);
+          }
+        },
+        { rootMargin: '300px' },
+      );
+      io.observe(el);
+    } else {
+      initMap(el);
+    }
+  }
+</script>

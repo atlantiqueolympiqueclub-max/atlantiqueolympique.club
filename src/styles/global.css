@@ -1,0 +1,914 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ *
+ * AOC design system — « La Plongée » (the dive)
+ * Motion philosophy:
+ *   · One continuous descent: the whole site is a single body of water,
+ *     graded from the sunlit surface down into the deep Atlantic. Light
+ *     lives in the water — caustics, godrays, particulate — never
+ *     simulated 3D geometry.
+ *   · The single script is public/js/deep-fx.js (static 'self' file — the
+ *     strict CSP holds): the caustic light engine and magnetic buttons.
+ *     Everything else is CSS-first.
+ *   · Scroll-driven animations are progressive: gated behind
+ *     @supports (animation-timeline) so unsupported browsers simply see
+ *     the finished state — nothing is ever hidden without them.
+ *   · Everything that moves is wrapped in prefers-reduced-motion.
+ * ------------------------------------------------------------------ */
+@theme {
+  /* Primary AOC azure / sky blue (#3CBBE8-ish) */
+  --color-aoc-50: #ecf9fe;
+  --color-aoc-100: #d2f0fb;
+  --color-aoc-200: #ade3f8;
+  --color-aoc-300: #76d0f2;
+  --color-aoc-400: #3cbbe8; /* primary brand */
+  --color-aoc-500: #1ba2d6;
+  --color-aoc-600: #1282b4;
+  --color-aoc-700: #146891;
+  --color-aoc-800: #185777;
+  --color-aoc-900: #194964;
+  --color-aoc-950: #102f44;
+
+  /* Deep navy used for body text & dark surfaces */
+  --color-navy: #0b2a4a;
+  --color-ink: #13233a;
+
+  /* Light-grey placeholders from the mockup */
+  --color-placeholder: #e6e8eb;
+
+  /* Typography — clean geometric sans, self-hosted via Fontsource.
+     Fontsource registers these under the standard family names below. */
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-display: "Poppins", ui-rounded, "SF Pro Display", "Segoe UI", system-ui,
+    sans-serif;
+}
+
+/* ------------------------------------------------------------------ *
+ * Base
+ * ------------------------------------------------------------------ */
+html {
+  scroll-behavior: smooth;
+  /* Offset anchored sections so the sticky header doesn't cover titles */
+  scroll-padding-top: 6rem;
+}
+
+html {
+  /* Form controls & the (supported) scrollbar pick up the brand azure */
+  accent-color: var(--color-aoc-500);
+  scrollbar-color: color-mix(in srgb, var(--color-aoc-500) 45%, transparent)
+    transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-navy);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Better rag on multi-line headlines & paragraphs (progressive) */
+h1,
+h2,
+h3 {
+  text-wrap: balance;
+}
+p {
+  text-wrap: pretty;
+}
+
+::selection {
+  background: var(--color-aoc-200);
+  color: var(--color-aoc-950);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-aoc-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Reusable composition utilities
+ * ------------------------------------------------------------------ */
+@utility container-aoc {
+  width: 100%;
+  max-width: 72rem; /* ~1152px */
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+/* The blue gradient title bar used for every section banner */
+@utility banner-gradient {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-aoc-700) 0%,
+    var(--color-aoc-500) 55%,
+    var(--color-aoc-400) 100%
+  );
+}
+
+/* Grey image placeholder block (matches the mockup's empty image tiles) */
+@utility ph-block {
+  background-color: var(--color-placeholder);
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-placeholder) 92%, white) 0%,
+    var(--color-placeholder) 100%
+  );
+}
+
+/* Soft card with an azure "glow" lift on hover */
+@utility card-aoc {
+  position: relative;
+  border-radius: var(--radius-2xl);
+  border: 1px solid var(--color-slate-200);
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(11 42 74 / 0.05);
+  transition:
+    box-shadow 0.35s ease,
+    border-color 0.35s ease,
+    transform 0.35s ease;
+  &:hover {
+    border-color: var(--color-aoc-200);
+    box-shadow: 0 24px 48px -24px rgb(27 162 214 / 0.4);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &:hover {
+      transform: translateY(-4px);
+    }
+  }
+}
+
+/* Light-catch sweep across a button on hover */
+@utility btn-shine {
+  position: relative;
+  overflow: clip;
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 35%,
+      rgb(255 255 255 / 0.45) 50%,
+      transparent 65%
+    );
+    transform: translateX(-130%);
+    pointer-events: none;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &::after {
+      transition: transform 0.6s ease;
+    }
+    &:hover::after,
+    &:focus-visible::after {
+      transform: translateX(130%);
+    }
+  }
+}
+
+/* "Voir plus →" links: arrow nudges forward on hover */
+@utility link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: var(--color-aoc-600);
+  transition: color 0.2s ease;
+  & svg {
+    transition: transform 0.25s ease;
+  }
+  &:hover,
+  &:focus-visible {
+    color: var(--color-aoc-800);
+  }
+  &:hover svg,
+  &:focus-visible svg {
+    transform: translateX(3px);
+  }
+}
+
+/* Conic azure gradient ring, for avatars (wrap the <img>) */
+@utility ring-water {
+  border-radius: calc(infinity * 1px);
+  padding: 3px;
+  background: conic-gradient(
+    from 210deg,
+    var(--color-aoc-500),
+    var(--color-aoc-200),
+    var(--color-aoc-400),
+    var(--color-aoc-600),
+    var(--color-aoc-500)
+  );
+}
+
+/* Flowing gradient text (pair with .animate-sheen on a nested span) */
+@utility text-water {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-aoc-200),
+    #8fe3ff 30%,
+    var(--color-aoc-400) 55%,
+    var(--color-aoc-200) 80%,
+    #baecff
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Oversized "ghost" outline type for the disciplines marquee */
+@utility text-outline {
+  color: transparent;
+  -webkit-text-stroke: 1.5px
+    color-mix(in srgb, var(--color-aoc-400) 42%, white);
+  @supports not (-webkit-text-stroke: 1px black) {
+    color: var(--color-aoc-100);
+  }
+}
+
+/* Same ghost type, tuned for dark water surfaces (404, navy bands) */
+@utility text-outline-light {
+  color: transparent;
+  -webkit-text-stroke: 2px
+    color-mix(in srgb, var(--color-aoc-200) 65%, transparent);
+  @supports not (-webkit-text-stroke: 1px black) {
+    color: var(--color-aoc-800);
+  }
+}
+
+/* Frosted panel on dark surfaces */
+@utility glass {
+  background: rgb(255 255 255 / 0.07);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* Numbered gradient badge for the membership form steps */
+@utility step-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  border-radius: calc(infinity * 1px);
+  background: linear-gradient(135deg, var(--color-aoc-400), var(--color-aoc-600));
+  color: #fff;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.9rem;
+  box-shadow: 0 10px 22px -10px rgb(27 162 214 / 0.65);
+}
+
+/* ------------------------------------------------------------------ *
+ * Keyframes
+ * ------------------------------------------------------------------ */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+/* Words surface from behind a clipping mask (see .hero-mask) */
+@keyframes word-rise {
+  from {
+    transform: translateY(118%);
+  }
+  to {
+    transform: none;
+  }
+}
+/* Reveal keyframes animate the individual `translate`/`scale` properties
+   (not `transform`) so filled scroll-driven animations never block the
+   transform-based hover lifts on the same elements. */
+@keyframes reveal-rise {
+  from {
+    opacity: 0;
+    translate: 0 28px;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes reveal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes reveal-left {
+  from {
+    opacity: 0;
+    translate: -32px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes reveal-right {
+  from {
+    opacity: 0;
+    translate: 32px 0;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+@keyframes reveal-zoom {
+  from {
+    opacity: 0;
+    scale: 0.94;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+/* Endless horizontal drift for the layered hero waves (width: 200%) */
+@keyframes drift {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes marquee-x {
+  to {
+    transform: translateX(calc(-100% - var(--marquee-gap, 3rem)));
+  }
+}
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(-5px);
+  }
+  50% {
+    transform: translateY(7px);
+  }
+}
+@keyframes blob-drift {
+  from {
+    transform: translate3d(-5%, -4%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(6%, 5%, 0) scale(1.15);
+  }
+}
+@keyframes sheen {
+  to {
+    background-position: 220% center;
+  }
+}
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@keyframes wave-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes cue-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(7px);
+  }
+}
+@keyframes to-top-in {
+  to {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: none;
+  }
+}
+@keyframes header-elevate {
+  to {
+    box-shadow: 0 10px 32px -16px rgb(11 42 74 / 0.25);
+  }
+}
+/* Odometer: elements animate --num from 0 up to their own --nt value */
+@keyframes count-to {
+  from {
+    --num: 0;
+  }
+}
+/* Swimmer crossing the page (scroll-scrubbed) + its time-based bob */
+@keyframes swim-x {
+  from {
+    translate: -12vw 0;
+  }
+  to {
+    translate: 104vw 0;
+  }
+}
+@keyframes swim-bob {
+  0%,
+  100% {
+    transform: translateY(-2px) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(3px) rotate(2.5deg);
+  }
+}
+/* Hero content sinks softly behind the page as you scroll away */
+@keyframes hero-sink {
+  to {
+    translate: 0 6.5rem;
+    opacity: 0.3;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Time-based entrance animations (hero & banners — run on load)
+ * The headline reveal is a masked line-rise: each word sits in an
+ * overflow-clipping .hero-mask and slides up from behind it. The mask's
+ * padding (undone by negative margins) keeps ascenders/descenders from
+ * being clipped at tight leading.
+ * ------------------------------------------------------------------ */
+.hero-mask {
+  display: inline-block;
+  overflow: clip;
+  padding: 0.14em 0.08em;
+  margin: -0.14em -0.08em;
+}
+.hero-word {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .anim-load {
+    animation: rise-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(var(--d, 0) * 1ms);
+  }
+  .hero-word {
+    animation: word-rise 0.95s cubic-bezier(0.19, 1, 0.22, 1) both;
+    animation-delay: calc(90ms + var(--i, 0) * 75ms);
+  }
+  .animate-sheen {
+    animation: sheen 7s linear infinite;
+  }
+  .animate-float {
+    animation: float-slow 7s ease-in-out infinite;
+  }
+  .scroll-cue-bob {
+    animation: cue-bob 2.2s ease-in-out infinite;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Stats odometer (pure CSS)
+ * `--num` is a registered integer so it can be interpolated; a counter
+ * turns it into rendered digits. `counter-reset` must live on the
+ * element (not ::after): the property is registered `inherits: false`,
+ * so the pseudo-element would only ever see the initial 0. Browsers
+ * without scroll-driven animations simply show the static number.
+ * These base rules stay ABOVE the scroll-driven block: `display` is
+ * overridden there at equal specificity.
+ * ------------------------------------------------------------------ */
+@property --num {
+  syntax: "<integer>";
+  initial-value: 0;
+  inherits: false;
+}
+
+.stat-count {
+  /* Final value; the count-to animation interpolates 0 → this. */
+  --num: var(--nt, 0);
+  counter-reset: stat-n calc(var(--num));
+  display: none; /* enabled only when scroll-driven animations exist */
+  min-width: calc(var(--digits, 1) * 1ch);
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+.stat-count::after {
+  content: counter(stat-n);
+}
+
+/* ------------------------------------------------------------------ *
+ * Swimmer — a little freestyler crossing a wave divider, driven by
+ * scroll. Purely decorative: hidden without scroll-driven animation
+ * support or when motion is reduced.
+ * ------------------------------------------------------------------ */
+.swimmer {
+  position: absolute;
+  left: 0;
+  display: none; /* enabled in the scroll-driven block below */
+  will-change: translate;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .swimmer-bob {
+    animation: swim-bob 1.7s ease-in-out infinite;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Scroll-driven effects (progressive: only in supporting browsers)
+ * ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    [data-reveal] {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      /* --dr staggers siblings: each step shifts the window ~5% later */
+      animation-range: entry calc(var(--dr, 0) * 5%)
+        entry calc(30% + var(--dr, 0) * 5%);
+    }
+    [data-reveal="fade"] {
+      animation-name: reveal-fade;
+    }
+    [data-reveal="left"] {
+      animation-name: reveal-left;
+    }
+    [data-reveal="right"] {
+      animation-name: reveal-right;
+    }
+    [data-reveal="zoom"] {
+      animation-name: reveal-zoom;
+    }
+
+    /* Section-title squiggle draws itself in as it enters */
+    .squiggle path {
+      stroke-dasharray: 130;
+      stroke-dashoffset: 130;
+      animation: wave-draw ease-out both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 60%;
+    }
+
+    /* Stats odometer: numbers roll up as the band scrolls in.
+       The static number stays in the DOM for assistive tech (and is the
+       only thing rendered in browsers without scroll-driven animations). */
+    .stat-count {
+      display: inline-block;
+      animation: count-to cubic-bezier(0.16, 1, 0.3, 1) both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 42%;
+    }
+    .stat-count + .stat-static {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+
+    /* The swimmer crosses the divider as it travels up the viewport */
+    .swimmer {
+      display: block;
+      animation: swim-x linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+
+  @supports (animation-timeline: scroll()) {
+    /* Thin reading-progress bar under the sticky header */
+    .scroll-progress {
+      animation: grow-x linear both;
+      animation-timeline: scroll(root);
+    }
+    /* Hero foreground sinks + dims while scrolling away (depth parallax) */
+    .hero-sink {
+      animation: hero-sink linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+    /* Header gains depth once the page starts scrolling */
+    .header-elevate {
+      animation: header-elevate linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 120px;
+    }
+    /* Floating "back to top" button fades in after ~1.5 screens */
+    .to-top {
+      animation: to-top-in linear both;
+      animation-timeline: scroll(root);
+      animation-range: 60vh 110vh;
+    }
+  }
+}
+
+.scroll-progress {
+  position: absolute;
+  inset-inline: 0;
+  bottom: -1px;
+  height: 2px;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, var(--color-aoc-400), var(--color-aoc-600));
+}
+
+.to-top {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 40;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(10px);
+}
+
+/* ------------------------------------------------------------------ *
+ * Deep FX (public/js/deep-fx.js) — the « La Plongée » light layer:
+ * a full-bleed canvas of caustics, godrays, cursor-light and particulate.
+ * ------------------------------------------------------------------ */
+.fx-deep {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .fx-deep {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ *
+ * Hero water: the depth gradient the caustic engine lights up — a bright,
+ * teal-lit surface high above grading down into the deep Atlantic navy.
+ * ------------------------------------------------------------------ */
+.hero-water {
+  background:
+    radial-gradient(60rem 26rem at 62% -22%, rgb(120 224 255 / 0.42), transparent 60%),
+    radial-gradient(46rem 30rem at 88% -8%, rgb(60 187 232 / 0.3), transparent 64%),
+    radial-gradient(40rem 26rem at 2% 108%, rgb(16 120 170 / 0.22), transparent 64%),
+    linear-gradient(180deg, #12557e 0%, #0e3a5c 34%, #0b2a4a 66%, #061d34 100%);
+}
+
+/* Cinematic scrim behind the hero copy: darker on the reading side (left)
+   and along the base, fading out so the caustic light show stays vivid on
+   the right. Guarantees text contrast over the brightest godrays. */
+.hero-scrim {
+  background:
+    linear-gradient(
+      90deg,
+      rgb(5 22 42 / 0.82) 0%,
+      rgb(5 22 42 / 0.5) 28%,
+      rgb(5 22 42 / 0) 58%
+    ),
+    linear-gradient(0deg, rgb(5 22 42 / 0.55) 0%, transparent 32%);
+}
+/* The hero headline sits in the water: a soft deep glow for presence + legibility */
+.hero-sink h1 {
+  text-shadow: 0 2px 26px rgb(5 20 38 / 0.45);
+}
+
+/* ------------------------------------------------------------------ *
+ * Card light-glint — a caustic highlight rides the card's border toward
+ * a fine pointer (public/js/deep-fx.js sets --gx/--gy). The glow lives
+ * only on the 1px edge (mask-exclude), so it never touches the content or
+ * hurts text contrast. Progressive: no mask support → just the hover lift.
+ * ------------------------------------------------------------------ */
+.card-aoc {
+  --gx: 50%;
+  --gy: 0%;
+}
+.card-aoc::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  background: radial-gradient(
+    14rem 14rem at var(--gx) var(--gy),
+    color-mix(in srgb, var(--color-aoc-300) 80%, white),
+    var(--color-aoc-400) 34%,
+    color-mix(in srgb, var(--color-aoc-500) 45%, transparent) 55%,
+    transparent 72%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .card-aoc:hover::before {
+    opacity: 1;
+  }
+}
+
+/* Fine film grain over dark sections — tactile, hides banding.
+   (SVG turbulence data-URI; `img-src data:` is allowed by the CSP.) */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.72' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+}
+
+/* ------------------------------------------------------------------ *
+ * Water décor: drifting foam waves, light blobs, marquee
+ * ------------------------------------------------------------------ */
+.wave-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  pointer-events: none;
+}
+.wave-layer > svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .wave-layer {
+    animation: drift var(--wt, 24s) linear infinite;
+    animation-delay: var(--wdl, 0s);
+    will-change: transform;
+  }
+  .wave-layer[data-reverse] {
+    animation-direction: reverse;
+  }
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .blob {
+    animation: blob-drift 18s ease-in-out infinite alternate;
+  }
+  .blob[data-late] {
+    animation-delay: -9s;
+  }
+}
+
+.marquee {
+  --marquee-gap: 3.5rem;
+  display: flex;
+  gap: var(--marquee-gap);
+  overflow: clip;
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+.marquee > ul {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--marquee-gap);
+  min-width: max-content;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .marquee > ul {
+    animation: marquee-x var(--marquee-speed, 42s) linear infinite;
+  }
+}
+/* Static marquee: drop the edge fade so the first word isn't clipped */
+@media (prefers-reduced-motion: reduce) {
+  .marquee {
+    mask-image: none;
+    -webkit-mask-image: none;
+    padding-inline: 1.25rem;
+  }
+}
+
+/* Pure-CSS lightbox: fade the backdrop, pop the photo */
+@media (prefers-reduced-motion: no-preference) {
+  .lightbox:target {
+    animation: reveal-fade 0.25s ease both;
+  }
+  .lightbox:target figure {
+    animation: pop-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/* Palmarès disclosure: gentle entrance for the revealed list */
+@media (prefers-reduced-motion: no-preference) {
+  details[open] > *:not(summary) {
+    animation: pop-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/* <fieldset>/<legend> behave like normal blocks inside form step cards.
+   Spacing lives on the floated legend: clearance would swallow the
+   cleared sibling's margin-top. */
+.fieldset-card legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+.fieldset-card legend + * {
+  clear: both;
+  margin-top: 0;
+}
+
+/* ------------------------------------------------------------------ *
+ * Markdown prose (blog articles, "Qui sommes-nous") — lightweight,
+ * no @tailwindcss/typography dependency.
+ * ------------------------------------------------------------------ */
+.prose-aoc {
+  color: color-mix(in srgb, var(--color-navy) 88%, #334155);
+  line-height: 1.75;
+}
+.prose-aoc > * + * {
+  margin-top: 1.1em;
+}
+.prose-aoc h2 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.5rem;
+  color: var(--color-navy);
+  margin-top: 1.8em;
+}
+.prose-aoc h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: var(--color-navy);
+  margin-top: 1.5em;
+}
+.prose-aoc a {
+  color: var(--color-aoc-600);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.prose-aoc a:hover {
+  color: var(--color-aoc-700);
+}
+.prose-aoc strong {
+  color: var(--color-navy);
+  font-weight: 700;
+}
+.prose-aoc em {
+  color: var(--color-aoc-800);
+}
+.prose-aoc ul {
+  list-style: disc;
+  padding-left: 1.4em;
+}
+.prose-aoc ol {
+  list-style: decimal;
+  padding-left: 1.4em;
+}
+.prose-aoc li {
+  margin-top: 0.4em;
+}
+.prose-aoc li::marker {
+  color: var(--color-aoc-400);
+}
+.prose-aoc blockquote {
+  border-left: 4px solid var(--color-aoc-400);
+  background: var(--color-aoc-50);
+  padding: 0.6em 1.1em;
+  border-radius: 0.5rem;
+  font-style: italic;
+  color: var(--color-aoc-800);
+}
+.prose-aoc img {
+  border-radius: 0.75rem;
+}

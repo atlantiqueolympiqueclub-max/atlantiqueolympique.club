@@ -1,0 +1,46 @@
+---
+/**
+ * AOC logo — the club's swimmer mark (public/logo.png) + wordmark.
+ * The artwork is dark-on-light, so it's presented on a small white rounded
+ * tile that reads cleanly on any surface (light header / dark footer).
+ * `variant="mark"` renders just the tile; `variant="full"` adds the wordmark.
+ * `light` flips the wordmark to white (for dark footers).
+ */
+interface Props {
+  variant?: 'full' | 'mark';
+  light?: boolean;
+  tagline?: boolean;
+  class?: string;
+}
+const { variant = 'full', light = false, tagline = true, class: className = '' } = Astro.props;
+const titleColor = light ? 'text-white' : 'text-navy';
+const subColor = light ? 'text-aoc-100' : 'text-aoc-600';
+---
+
+<span class:list={['inline-flex items-center gap-3', className]}>
+  <!-- Logo tile -->
+  <span class="logo-tile inline-flex shrink-0 items-center justify-center rounded-xl bg-white p-1.5 shadow-sm ring-1 ring-navy/10">
+    <img
+      src="/logo.png"
+      alt={variant === 'mark' ? 'Atlantique Olympique Club' : ''}
+      width="311"
+      height="240"
+      class="h-8 w-auto"
+      loading="eager"
+      decoding="async"
+    />
+  </span>
+
+  {variant === 'full' && (
+    <span class="flex flex-col leading-tight">
+      <span class:list={['font-display text-[0.95rem] font-extrabold uppercase tracking-tight sm:text-base', titleColor]}>
+        Atlantique<br />Olympique Club
+      </span>
+      {tagline && (
+        <span class:list={['text-[0.6rem] italic sm:text-[0.65rem]', subColor]}>
+          Réussite par l'effort dans la discipline
+        </span>
+      )}
+    </span>
+  )}
+</span>

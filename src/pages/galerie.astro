@@ -1,0 +1,19 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import GalleryGrid from '../components/GalleryGrid.astro';
+
+const items = (await getCollection('gallery')).sort((a, b) => a.data.order - b.data.order);
+---
+
+<BaseLayout
+  title="Galerie"
+  description="Photos des compétitions, entraînements et moments de vie de l'Atlantique Olympique Club."
+>
+  <PageHero eyebrow="Vie du club" title="Notre galerie" />
+
+  <section id="galerie" class="container-aoc py-14 sm:py-20">
+    <GalleryGrid items={items} closeHref="#galerie" />
+  </section>
+</BaseLayout>

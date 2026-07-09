@@ -1,0 +1,58 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import EventTimeline from '../components/EventTimeline.astro';
+import { partitionEvents } from '../lib/events';
+
+const { upcoming, past } = partitionEvents(await getCollection('events'));
+
+// Group a sorted list into consecutive month buckets ("juillet 2025").
+const monthFmt = new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric' });
+function groupByMonth(events: CollectionEntry<'events'>[]) {
+  const groups: { label: string; events: CollectionEntry<'events'>[] }[] = [];
+  for (const e of events) {
+    const label = monthFmt.format(e.data.date);
+    const last = groups[groups.length - 1];
+    if (last && last.label === label) last.events.push(e);
+    else groups.push({ label, events: [e] });
+  }
+  return groups;
+}
+
+const phases = [];
+if (upcoming.length) {
+  phases.push({
+    heading: 'Prochains rendez-vous',
+    count: upcoming.length,
+    groups: groupByMonth(upcoming),
+    highlightNext: true,
+  });
+}
+if (past.length) {
+  phases.push({
+    heading: 'Éditions passées',
+    groups: groupByMonth(past),
+    past: true,
+  });
+}
+---
+
+<BaseLayout
+  title="Calendrier"
+  description="Le calendrier de la saison de l'Atlantique Olympique Club : compétitions, traversées et galas à venir."
+>
+  <PageHero eyebrow="Agenda de la saison" title="Calendrier" />
+
+  <section class="container-aoc py-14 sm:py-20">
+    {phases.length ? (
+      <div class="mx-auto max-w-3xl">
+        <EventTimeline phases={phases} />
+      </div>
+    ) : (
+      <p class="mx-auto max-w-xl rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-slate-500">
+        Aucun événement au calendrier pour le moment. Revenez bientôt !
+      </p>
+    )}
+  </section>
+</BaseLayout>

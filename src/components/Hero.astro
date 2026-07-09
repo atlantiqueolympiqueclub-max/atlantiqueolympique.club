@@ -1,0 +1,118 @@
+---
+import site from '../data/site.json';
+import Icon from './Icon.astro';
+import DeepWater from './DeepWater.astro';
+
+/**
+ * Homepage hero — « La Plongée »: the plunge. A depth gradient graded from
+ * sunlit teal at the surface to deep Atlantic navy, alive with caustic
+ * light, godrays and rising particulate (public/js/deep-fx.js). The cursor
+ * is a source of light; scrolling dives deeper and dims it. The headline
+ * surfaces word by word from behind a clipping mask. Everything degrades
+ * gracefully: static and CSS-only without JS or under prefers-reduced-motion.
+ */
+interface Props {
+  title: string;
+  subtitle?: string;
+  /** Word of `title` to render with the flowing water gradient. */
+  accent?: string;
+}
+const { title, subtitle, accent } = Astro.props;
+
+const words = title.split(/\s+/);
+const norm = (w: string) =>
+  w.normalize('NFD').replace(/[^\p{L}\p{N}]/gu, '').toLowerCase();
+const accentNorm = accent ? norm(accent) : null;
+
+const motto = site.tagline.replace(/\.\s*$/, '');
+
+// Two full sine periods per viewport width; translateX(-50%) loops seamlessly.
+const WAVE =
+  'M0,60 Q180,100 360,60 T720,60 T1080,60 T1440,60 T1800,60 T2160,60 T2520,60 T2880,60 V120 H0 Z';
+---
+
+<section class="grain relative isolate overflow-clip bg-navy text-white">
+  <!-- Depth gradient: sunlit surface far above, deep navy below -->
+  <div class="hero-water absolute inset-0 -z-20" aria-hidden="true"></div>
+
+  <!-- Living underwater light: caustics, godrays, cursor-light, ripples -->
+  <DeepWater class="-z-10" intensity={1} rays surface depthReact />
+
+  <!-- Cinematic scrim: keeps the copy crisp, focuses the light on the right -->
+  <div class="hero-scrim absolute inset-0 -z-[5]" aria-hidden="true"></div>
+
+  <div class="hero-sink container-aoc relative flex min-h-[min(46rem,92svh)] flex-col justify-center py-24 sm:py-28">
+    <p
+      class="anim-load inline-flex w-fit items-center gap-2.5 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 font-display text-xs font-bold uppercase tracking-[0.18em] text-aoc-100 backdrop-blur-sm"
+    >
+      <span class="relative flex h-2 w-2" aria-hidden="true">
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-aoc-300 opacity-75 motion-reduce:hidden"></span>
+        <span class="relative inline-flex h-2 w-2 rounded-full bg-aoc-300"></span>
+      </span>
+      Club de natation · Dakar
+    </p>
+
+    <h1 class="mt-7 max-w-4xl font-display text-[clamp(2.7rem,1.5rem+5.4vw,5.2rem)] font-black leading-[1.04] tracking-tight">
+      {words.map((w, i) => (
+        <>
+          <span class="hero-mask"><span class="hero-word" style={`--i:${i}`}>
+            {accentNorm && norm(w) === accentNorm ? (
+              <span class="text-water animate-sheen">{w}</span>
+            ) : (
+              w
+            )}
+          </span></span>{' '}
+        </>
+      ))}
+    </h1>
+
+    {subtitle && (
+      <p class="anim-load mt-6 max-w-xl text-base font-medium text-aoc-50/90 sm:text-lg" style="--d:520">
+        {subtitle}
+      </p>
+    )}
+
+    <p class="anim-load mt-5 flex items-center gap-3 text-sm italic text-aoc-100/85" style="--d:660">
+      <span class="h-px w-8 shrink-0 bg-aoc-300/70" aria-hidden="true"></span>
+      « {motto} »
+    </p>
+
+    <div class="anim-load mt-9 flex flex-wrap items-center gap-4" style="--d:800">
+      <a
+        href="/#a-propos"
+        data-magnet
+        class="btn-shine group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-sm font-bold uppercase tracking-wide text-navy shadow-xl shadow-navy/25 transition-colors hover:bg-aoc-50"
+      >
+        Découvrir le club
+        <Icon name="arrow-right" class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+      </a>
+    </div>
+  </div>
+
+  <!-- Scroll cue -->
+  <div class="absolute bottom-[7.5rem] left-1/2 hidden -translate-x-1/2 sm:block">
+    <a
+      href="/#a-propos"
+      class="anim-load flex flex-col items-center text-aoc-100/70 transition-colors hover:text-white"
+      style="--d:1200"
+      aria-label="Faire défiler vers la section À propos"
+    >
+      <span class="scroll-cue-bob flex h-9 w-6 items-start justify-center rounded-full border-2 border-current p-1.5">
+        <span class="h-2 w-[3px] rounded-full bg-current"></span>
+      </span>
+    </a>
+  </div>
+
+  <!-- Living layered foam waves -->
+  <div class="relative h-[70px] sm:h-[100px]" aria-hidden="true">
+    <div class="wave-layer h-[66px] opacity-25 sm:h-[96px]" style="--wt:34s; --wdl:-6s" data-reverse>
+      <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class="fill-white"><path d={WAVE}></path></svg>
+    </div>
+    <div class="wave-layer h-[50px] opacity-50 sm:h-[72px]" style="--wt:23s; --wdl:-11s">
+      <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class="fill-white"><path d={WAVE}></path></svg>
+    </div>
+    <div class="wave-layer h-9 sm:h-14" style="--wt:16s">
+      <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class="fill-white"><path d={WAVE}></path></svg>
+    </div>
+  </div>
+</section>

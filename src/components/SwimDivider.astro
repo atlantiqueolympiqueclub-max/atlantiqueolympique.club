@@ -1,0 +1,71 @@
+---
+/**
+ * A taller, living wave divider with a tiny freestyler crossing the page:
+ * the swimmer's progress is scrubbed by scroll (CSS scroll-driven
+ * animation) while a time-based bob keeps the stroke lively. The main
+ * crest is painted *after* the swimmer so their lower body sits "in" the
+ * water. Decorative only — the swimmer simply doesn't render in browsers
+ * without scroll-driven animations or with reduced motion.
+ *
+ *   `from` — bg-* class of the section above (the sky).
+ *   `to`   — fill-* class of the section below (the water).
+ */
+interface Props {
+  from?: string;
+  to?: string;
+  class?: string;
+}
+const { from = 'bg-white', to = 'fill-navy', class: className = '' } = Astro.props;
+
+const WAVE =
+  'M0,60 Q180,100 360,60 T720,60 T1080,60 T1440,60 T1800,60 T2160,60 T2520,60 T2880,60 V120 H0 Z';
+---
+
+<div class:list={['relative overflow-clip leading-none', from, className]} aria-hidden="true">
+  <div class="relative h-16 sm:h-24">
+    <!-- Faint back crest (drifts the other way) -->
+    <div class="wave-layer h-[82%] opacity-20" style="--wt:31s; --wdl:-8s" data-reverse>
+      <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class={to}><path d={WAVE}></path></svg>
+    </div>
+
+    <!-- The swimmer (between the two crests, so the water hides the legs) -->
+    <span class="swimmer bottom-[42%] text-aoc-500 sm:bottom-[46%]">
+      <span class="swimmer-bob block w-16 sm:w-20">
+        <svg viewBox="0 0 64 28" fill="none" class="h-auto w-full">
+          <!-- head -->
+          <circle cx="41" cy="9.5" r="3.4" fill="currentColor"></circle>
+          <!-- body + legs -->
+          <path
+            d="M44 13 C 36 16.5, 27 17, 17.5 14.5"
+            stroke="currentColor"
+            stroke-width="2.8"
+            stroke-linecap="round"></path>
+          <!-- recovery arm arcing over the head -->
+          <path
+            d="M29 12.5 C 31.5 3.5, 41 1.5, 46.5 7"
+            stroke="currentColor"
+            stroke-width="2.6"
+            stroke-linecap="round"></path>
+          <!-- front arm reaching into the water -->
+          <path
+            d="M45.5 12 C 51 11.5, 55.5 13, 59 16.5"
+            stroke="currentColor"
+            stroke-width="2.6"
+            stroke-linecap="round"></path>
+          <!-- kick splash -->
+          <path
+            d="M14.5 13.5 L 10.5 9.5 M 13 16 L 8 15.5"
+            stroke="currentColor"
+            stroke-width="2.2"
+            stroke-linecap="round"
+            opacity="0.75"></path>
+        </svg>
+      </span>
+    </span>
+
+    <!-- Main crest, painted over the swimmer's lower body -->
+    <div class="wave-layer h-[70%]" style="--wt:19s">
+      <svg viewBox="0 0 2880 120" preserveAspectRatio="none" class={to}><path d={WAVE}></path></svg>
+    </div>
+  </div>
+</div>

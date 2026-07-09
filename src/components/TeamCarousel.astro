@@ -1,0 +1,56 @@
+---
+import SmartImage from './SmartImage.astro';
+import Icon from './Icon.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  members: CollectionEntry<'team'>[];
+}
+const { members } = Astro.props;
+---
+
+<div class="relative" data-carousel data-reveal>
+  <!-- arrows (progressive enhancement; the track is swipeable/scrollable without JS) -->
+  <button
+    type="button"
+    data-carousel-prev
+    class="absolute -left-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-aoc-600 shadow-lg shadow-navy/10 backdrop-blur transition-colors hover:border-aoc-500 hover:bg-aoc-500 hover:text-white sm:flex"
+    aria-label="Précédent"
+  >
+    <Icon name="arrow-left" class="h-5 w-5" />
+  </button>
+
+  <ul
+    data-carousel-track
+    class="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-1 pb-4 pt-1 [scrollbar-width:thin] sm:px-10"
+  >
+    {members.map((m) => (
+      <li class="card-aoc flex w-56 shrink-0 snap-center flex-col items-center p-5 text-center">
+        <span class="ring-water inline-flex">
+          <SmartImage
+            src={m.data.photo}
+            alt={m.data.name}
+            rounded="rounded-full"
+            class="h-28 w-28 ring-[3px] ring-white"
+          />
+        </span>
+        <p class="mt-4 text-sm font-bold text-navy">{m.data.name}</p>
+        <p class="mt-1.5 rounded-full bg-aoc-50 px-3 py-0.5 text-xs font-semibold text-aoc-700">
+          {m.data.role}
+        </p>
+        {m.data.bio && <p class="mt-2.5 line-clamp-3 text-xs leading-relaxed text-slate-500">{m.data.bio}</p>}
+      </li>
+    ))}
+  </ul>
+
+  <button
+    type="button"
+    data-carousel-next
+    class="absolute -right-3 top-1/2 z-10 hidden h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-aoc-600 shadow-lg shadow-navy/10 backdrop-blur transition-colors hover:border-aoc-500 hover:bg-aoc-500 hover:text-white sm:flex"
+    aria-label="Suivant"
+  >
+    <Icon name="arrow-right" class="h-5 w-5" />
+  </button>
+</div>
+
+<script is:inline src="/js/carousel.js" defer></script>
