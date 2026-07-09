@@ -32,6 +32,13 @@
       "icon": "tiktok",
       "handle": "@atlantiqueolympiqueclub",
       "blurb": "Vidéos & coulisses"
+    },
+    {
+      "label": "YouTube",
+      "href": "https://www.youtube.com/@atlantiqueolympiqueclub",
+      "icon": "youtube",
+      "handle": "@atlantiqueolympiqueclub",
+      "blurb": "Compétitions & vidéos"
     }
   ]
 }
