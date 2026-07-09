@@ -13,9 +13,9 @@
 
 backend:
   name: github
-  repo: OWNER/REPO              # ← À REMPLACER : "votre-compte/nom-du-depot" (SETUP.md §2)
+  repo: atlantiqueolympiqueclub-max/atlantiqueolympique.club
   branch: main
-  base_url: https://WORKER.workers.dev   # ← À REMPLACER : URL du worker d'authentification (SETUP.md §5)
+  base_url: https://aoc.atlantiqueolympiqueclub.workers.dev   # ← À REMPLACER : URL du worker d'authentification (SETUP.md §5)
 
 # Permet de tester l'éditeur en local sans authentification, via le proxy
 # « npx @sveltia/cms-proxy-server » (facultatif). Sans effet en production :
