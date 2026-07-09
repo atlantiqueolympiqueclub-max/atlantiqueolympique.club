@@ -15,7 +15,7 @@ backend:
   name: github
   repo: atlantiqueolympiqueclub-max/atlantiqueolympique.club
   branch: main
-  base_url: https://aoc.atlantiqueolympiqueclub.workers.dev   # ← À REMPLACER : URL du worker d'authentification (SETUP.md §5)
+  base_url: https://sveltia-cms-auth.atlantiqueolympiqueclub.workers.dev   # URL du worker d'authentification (SETUP.md §5)
 
 # Permet de tester l'éditeur en local sans authentification, via le proxy
 # « npx @sveltia/cms-proxy-server » (facultatif). Sans effet en production :

@@ -8,6 +8,8 @@ node_modules/
 # form-handler runtime data & secrets
 form-handler/.env
 form-handler/data/
+oauthclientid
+oauthsecret
 *.log
 
 # os / editor
