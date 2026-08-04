@@ -1,7 +1,8 @@
 ---
-name: "Mamadou Diop"
-role: "Entraîneur principal"
-photo: "/images/team/mamadou-diop.svg"
-bio: "Ancien nageur international, 15 ans de coaching."
+name: Moctar Fall
+role: Préparateur Physique
+photo: /images/team/mamadou-diop.svg
+photoAlt: ''
+bio: Préparation physique des nageurs
 order: 1
 ---
