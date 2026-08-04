@@ -1,7 +1,8 @@
 ---
-name: "Cheikh Fall"
-role: "Préparateur physique"
-photo: "/images/team/cheikh-fall.svg"
-bio: "Préparation athlétique et prévention des blessures."
+name: MOUSTAPHA FALL
+role: COACH DE NATATION
+photo: /images/team/cheikh-fall.svg
+photoAlt: ''
+bio: ''
 order: 3
 ---
